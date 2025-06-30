@@ -1,0 +1,100 @@
+.curChecklist{
+
+    background-color: white;
+}
+
+.curChecklist header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+
+.logo{
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+}
+
+.signOut{
+    border: none;
+    border-style: solid;
+    border-color: #1c4da1;
+    border-width: 2px;
+    border-radius: 20px;
+    background-color: white;
+
+    height: 30px;
+    width: 100px;
+
+    color: #1c4da1;
+    font-weight: 300;
+
+    cursor: pointer;
+    transition: background-color 0.5s ease-in-out;
+
+    margin: 30px;
+}
+
+.signOut:hover{
+    background-color: #1c4da1;
+    color: white;
+}
+
+.banner{
+    display: flex;
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 500px;
+    height: 60px;
+
+    justify-content: center;
+    align-items: center;
+
+    color: white;
+    font-size: 45px;
+    font-weight: 900;
+
+    background-color: #1c4da1;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding: 1rem;
+    z-index: 2;
+}
+
+.studentBody{
+    display: flex;
+    flex-direction: column;
+    margin: 28px;
+}
+
+.studentBody form{
+    margin-left: auto;
+    
+}
+
+.searchBar{
+    border: none;
+
+    width: 250px;
+    height: 30px;
+
+    background-color: grey;
+    border-radius: 20px;
+
+    color: white;
+}
+
+.studentDetail{
+    background-color: rgb(244, 244, 244);
+}
+
+.studentEval{
+    display: flex;
+}
