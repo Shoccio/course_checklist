@@ -14,3 +14,10 @@ def addEntry(student_id: str, program_id:str, db_connection: Session):
     except SQLAlchemyError:
         db_connection.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Error occured adding corresponding courses")
+    
+def getStudentCourses(student_id: str, db_connection: Session):
+    try:
+        courses = db_connection.query(SC).filter(SC.student_id == student_id).all()
+        return courses
+    except SQLAlchemyError:
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Student is not found")
