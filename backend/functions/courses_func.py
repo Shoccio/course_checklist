@@ -4,6 +4,7 @@ from sqlalchemy import select, null, literal, join
 from schema.course_schema import CourseSchema 
 from models.course_model import Course
 from models.program_course_model import Program_Courses as PC
+from functions.student_course_func import deleteCourses as DC
 from fastapi import HTTPException, status
 
 def addCourse(course: CourseSchema, db_connection: Session):
@@ -39,6 +40,7 @@ def deleteCourse(course_id: str, db_connection: Session):
         
         if not course:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Course does not exist")
+        DC(course_id, db_connection)
         
         db_connection.delete(course)
         db_connection.commit()

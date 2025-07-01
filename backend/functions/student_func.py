@@ -3,6 +3,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException, status
 from functions import user_func
 from functions import student_course_func as sc_func
+from functions.student_course_func import deleteStudent as DS
 from schema.student_schema import Student
 from models.student_model import Student as Student_Model
 
@@ -41,6 +42,7 @@ def editStudent(student: Student, student_id: str, db_session: Session):
 def deleteStudent(student_id: str, db_session: Session):
     try:
         user_func.deleteUser(student_id, db_session)
+        DS(student_id, db_session)
 
         student = db_session.query(Student_Model).filter_by(student_id = student_id).one()
 
