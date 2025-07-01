@@ -1,8 +1,10 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import select, null, literal, join
 from schema.course_schema import CourseSchema 
 from models.course_model import Course
 from models.program_course_model import Program_Courses as PC
+from fastapi import HTTPException, status
 
 def addCourse(course: CourseSchema, db_connection: Session):
     course_model = Course(**course.model_dump())
@@ -10,34 +12,41 @@ def addCourse(course: CourseSchema, db_connection: Session):
     db_connection.add(course_model)
     db_connection.commit()
 
-    return {"Course added successfully"}
+    return {"message": "Course added successfully"}
 
 def editCourse(course: CourseSchema, course_id: str, db_connection: Session):
     course_model = course.model_dump()
+    try:
+        old_course = db_connection.query(Course).filter_by(course_id = course_id).first()
 
-    old_course = db_connection.query(Course).filter_by(course_id = course_id).first()
+        if not old_course:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "Course does not exist")
+        
+        for key, value in course_model.items():
+            setattr(old_course, key, value)
 
-    if not old_course:
-        return {"Error: Course not found"}
-    
-    for key, value in course_model.items():
-        setattr(old_course, key, value)
+        db_connection.commit()
+    except SQLAlchemyError:
+        db_connection.rollback()
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "An error occured while editing a course")
 
-    db_connection.commit()
-
-    return {"Course edited successfully"}
+    return {"message": "Course edited successfully"}
 
 
 def deleteCourse(course_id: str, db_connection: Session):
-    course = db_connection.query(Course).filter_by(course_id = course_id).first()
-    
-    if not course:
-        return {"Error: Course not found"}
-    
-    db_connection.delete(course)
-    db_connection.commit()
+    try:
+        course = db_connection.query(Course).filter_by(course_id = course_id).first()
+        
+        if not course:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "Course does not exist")
+        
+        db_connection.delete(course)
+        db_connection.commit()
+    except SQLAlchemyError:
+        db_connection.rollback()
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "An error occured while deleting a course")
 
-    return {"Course deleted successfully"}
+    return {"message": "Course deleted successfully"}
 
 def getCourse(student_id: str, program_id: str, db_connection: Session):
     query = select(

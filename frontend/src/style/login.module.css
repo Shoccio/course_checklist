@@ -52,6 +52,11 @@
     border-bottom-left-radius: 8px;
 }
 
+.leftBlock form{
+    display: flex;
+    flex-direction: column;
+}
+
 .login .leftBlock h1{
     color: white;
     font-size: 60px;
@@ -84,6 +89,8 @@
     font-weight: 300;
 
     margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
 
     cursor: pointer;
     transition: background-color 0.5s ease-in-out;

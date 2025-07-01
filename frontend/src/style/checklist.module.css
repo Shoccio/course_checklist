@@ -81,6 +81,7 @@
 
 .searchBar{
     border: none;
+    margin: 5px;
 
     width: 250px;
     height: 30px;
@@ -89,12 +90,71 @@
     border-radius: 20px;
 
     color: white;
+    
 }
 
 .studentDetail{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
     background-color: rgb(244, 244, 244);
 }
 
-.studentEval{
+.studentDetail h3{
     display: flex;
+    justify-content: center;
+    color: #1c4da1;
+}
+
+.studentResidency{
+    display: flex;
+    flex-direction: row;
+}
+
+.studentDetail .lBlock{
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+}
+
+.lBlock span{
+    margin: 5px;
+    margin-left: 50px;
+}
+
+.studentDetail .rBlock{
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+}
+
+.rBlock span{
+    margin: 5px;
+}
+
+.yearSem{
+    color: #1c4da1;
+}
+
+table{
+    border-collapse: collapse;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    width: 95%;
+
+}
+
+td{
+    text-align: center;
+    padding: 5px;
+}
+
+thead tr{
+    border-bottom: 2px solid black;
+}
+
+tbody tr{
+    border-bottom: 2px solid black;
+    border-top: 2px solid black;
 }
