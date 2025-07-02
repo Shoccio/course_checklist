@@ -1,8 +1,13 @@
-from sqlalchemy import String, Integer, Column, ForeignKey
+import enum
+from sqlalchemy import String, Integer, Column, ForeignKey, Enum
 from models.programs_model import Program
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
+
+class Status(enum.Enum):
+    regular = "regular"
+    irregular = "irregular"
 
 class Student(Base):
     __tablename__ = "students"
@@ -15,3 +20,4 @@ class Student(Base):
     student_l_name = Column(String(30), nullable=False)
     student_m_name = Column(String(30))
     student_year = Column(Integer, nullable=False)
+    student_status = Column(Enum(Status), nullable=False)

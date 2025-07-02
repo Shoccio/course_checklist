@@ -47,22 +47,27 @@ def createToken(user: dict, expire: timedelta | None = None):
 
 def getCurrentUser(request: Request, db_connection: Session = Depends(get_db)):
     token = request.cookies.get("access_token")
+
+    if token is None:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="No token found in cookies")
+
     try:
         jwt_decoded = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         login_id = jwt_decoded.get("sub")
 
         if not login_id:
-            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid token payload")
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
         
         user = db_connection.query(User).filter(User.login_id == login_id).first()
         
         if not user:
-            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "User not found")
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="User not found")
         
+        return user
+
     except JWTError:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Failed Token Decode")
-    
-    return user
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Failed to decode token")
+
 
 def getCurrentUserRole(user: User = Depends(getCurrentUser)):
     return user.role.value

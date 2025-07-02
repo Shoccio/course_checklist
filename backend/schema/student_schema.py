@@ -9,4 +9,5 @@ class Student(BaseModel):
     student_l_name:     str
     student_m_name:     str | None
     student_year:       int
+    student_status:     str
 
