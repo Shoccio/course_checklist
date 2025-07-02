@@ -1,0 +1,78 @@
+/* Base table styling already included, enhancing it */
+table {
+    border-collapse: collapse;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    width: 95%;
+    background-color: white;
+    font-size: 14px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+thead tr {
+    background-color: #1c4da1;
+    color: white;
+    font-weight: bold;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+    background-color: #eef4ff;
+}
+
+td, th {
+    text-align: center;
+    padding: 10px 5px;
+}
+
+/* Editable inputs */
+table input[type="text"],
+table select {
+    width: 90%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+}
+
+table input[type="text"]:focus,
+table select:focus {
+    outline: none;
+    border-color: #1c4da1;
+    box-shadow: 0 0 3px #1c4da1;
+}
+
+/* Action buttons/icons */
+table button {
+    padding: 4px 10px;
+    background-color: #1c4da1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+table button:hover {
+    background-color: #163b7a;
+}
+
+table svg {
+    cursor: pointer;
+    color: #1c4da1;
+    transition: color 0.3s ease;
+}
+
+table svg:hover {
+    color: #163b7a;
+}
+
+.yearSem{
+    color: #163b7a
+}

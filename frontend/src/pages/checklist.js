@@ -1,23 +1,38 @@
 import React, { useEffect, useState } from "react";
 import Logo from "../imgs/uphsllogo.png";
 import style from "../style/checklist.module.css";
+import StudentSearchBar from "../component/searchBar";
+import CourseTable from "../component/table";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
-// 🔧 Helper function to add ordinal suffix to numbers (1 -> 1st, 2 -> 2nd, etc.)
-function ordinal(n) {
-    const suffixes = ["th", "st", "nd", "rd"];
-    const v = n % 100;
-    return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
-}
 
 export default function Checklist() {
     const navigate = useNavigate();
     const [student, setStudent] = useState(null);
     const [courses, setCourses] = useState([]);
 
-    const signOut = () => {
-        navigate("/");
+    const signOut = async () => {
+        try {
+            await axios.post("http://127.0.0.1:8000/auth/logout", {}, {
+                withCredentials: true,
+            });
+        } catch (err) {
+            console.error("Logout failed:", err);
+        } finally {
+            navigate("/");
+        }
+    };
+
+    const handleStudentSelect = async (student_id) =>{
+        try {
+            const res = await axios.get(`http://127.0.0.1:8000/student/get/${student_id}`, {
+                withCredentials: true
+            });
+            setStudent(res.data.student);
+            setCourses(res.data.courses);
+        } catch (err) {
+            console.error("Failed to fetch student details:", err);
+        }
     };
 
     useEffect(() => {
@@ -50,9 +65,8 @@ export default function Checklist() {
             </header>
 
             <div className={style.studentBody}>
-                <form>
-                    <input className={style.searchBar} type="text" placeholder="SEARCH STUDENT..." />
-                </form>
+                    {student?.role === "admin" && <StudentSearchBar onSelectStudent={handleStudentSelect} />}
+
 
                 <div className={style.studentDetail}>
                     <h3>STUDENT RESIDENCY EVALUATION</h3>
@@ -71,68 +85,8 @@ export default function Checklist() {
                         </div>
                     </div>
 
-                    <h3>Curriculum Residency Evaluation</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>SUB CODE</th>
-                                <th>SUB DESCRIPTION</th>
-                                <th>TOTAL UNIT</th>
-                                <th>CREDIT EARNED</th>
-                                <th>GRADE</th>
-                                <th>REMARK</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {courses.length === 0 ? (
-                                <tr>
-                                    <td colSpan="6" style={{ textAlign: "center" }}>
-                                        No courses found.
-                                    </td>
-                                </tr>
-                            ) : (
-                                (() => {
-                                    const sorted = [...courses].sort((a, b) =>
-                                        a.year !== b.year ? a.year - b.year : a.semester - b.semester
-                                    );
+                    <CourseTable courses={courses} role={student?.role} />
 
-                                    const rows = [];
-                                    let prevYear = null;
-                                    let prevSem = null;
-
-                                    sorted.forEach((course, index) => {
-                                        const { year, semester } = course;
-
-                                        if (year !== prevYear || semester !== prevSem) {
-                                            rows.push(
-                                                <tr key={`label-${index}`} className={style.yearSem}>
-                                                    <td colSpan="6" style={{ fontWeight: "bold" }}>
-                                                        {ordinal(year)} Year, {ordinal(semester)} Sem
-                                                    </td>
-                                                </tr>
-                                            );
-                                            prevYear = year;
-                                            prevSem = semester;
-                                        }
-
-                                        rows.push(
-                                            <tr key={index}>
-                                                <td>{course.course_id}</td>
-                                                <td>{course.course_name}</td>
-                                                <td>{course.course_units}</td>
-                                                <td>{course.course_units}</td>
-                                                <td>{course.grade ?? "-"}</td>
-                                                <td>{course.remark}</td>
-                                            </tr>
-                                        );
-
-                                    });
-
-                                    return rows;
-                                })()
-                            )}
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
