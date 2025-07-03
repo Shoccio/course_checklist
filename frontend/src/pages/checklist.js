@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { FaPencilAlt, FaPlus, FaPrint } from "react-icons/fa"; // pencil icon
 import Logo from "../imgs/uphsllogo.png";
 import style from "../style/checklist.module.css";
 import StudentSearchBar from "../component/searchBar";
 import CourseTable from "../component/table";
+import AddStudentModal from "../component/addStudent";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -22,6 +24,18 @@ export default function Checklist() {
             navigate("/");
         }
     };
+
+    const addStudent = async (student) => {
+        try {
+            await axios.post("http://127.0.0.1:8000/student/add",
+                { student: student },
+                { withCredentials:true }
+            )
+        }
+        catch (err){
+            console.error("Adding failed:", err);
+        }
+    }
 
     const handleStudentSelect = async (student_id) =>{
         try {
@@ -69,7 +83,18 @@ export default function Checklist() {
 
 
                 <div className={style.studentDetail}>
-                    <h3>STUDENT RESIDENCY EVALUATION</h3>
+                    <h3>
+                        STUDENT RESIDENCY EVALUATION
+                        <span className={style.buttons}>
+                            <AddStudentModal onSubmit={addStudent} />
+                            <FaPencilAlt style={{cursor: "pointer"}}
+                                         title="Edit Student"/>
+                            <FaPrint style={{cursor: "pointer"}}
+                                     title="Print"/>
+                        </span>
+
+                    </h3>
+                    
                     <div className={style.studentResidency}>
                         <div className={style.lBlock}>
                             <span>Student ID: {student?.student_id}</span>
@@ -85,7 +110,8 @@ export default function Checklist() {
                         </div>
                     </div>
 
-                    <CourseTable courses={courses} role={student?.role} />
+                    <CourseTable student_id={student?.student_id}
+                    courses={courses} role={student?.role} onSelectStudent={handleStudentSelect} />
 
                 </div>
             </div>

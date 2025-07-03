@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaPencilAlt } from "react-icons/fa"; // pencil icon
 import style from "../style/table.module.css"; // adjust if needed
+import axios from "axios";
 
 // 🔧 Helper function to add ordinal suffix to numbers (1 -> 1st, 2 -> 2nd, etc.)
 function ordinal(n) {
@@ -9,20 +10,41 @@ function ordinal(n) {
     return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
 }
 
-export default function CourseTable({ courses, role }) {
+export default function CourseTable({ student_id, courses, role, onSelectStudent }) {
+    const [editedCourse, setEditedCourse] = useState("");
     const [editIndex, setEditIndex] = useState(null);
     const [editedGrade, setEditedGrade] = useState("");
     const [editedRemark, setEditedRemark] = useState("");
 
-    const handleEditClick = (index, grade, remark) => {
+    const handleEditClick = (index, course_id, grade, remark) => {
         setEditIndex(index);
+        setEditedCourse(course_id)
         setEditedGrade(grade ?? "");
-        setEditedRemark(remark ?? "Passed");
+        setEditedRemark(remark ? remark: "Passed");
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         // Handle saving here
-        console.log("Saving grade:", editedGrade, "remark:", editedRemark);
+        //console.log("Saving grade:", editedGrade, "remark:", editedRemark);
+        let gradeToSend = editedGrade
+        
+        if (!editedGrade || editedGrade === "-") {
+            gradeToSend = "-1.0"
+        }
+
+        try{
+            await axios.patch(`http://127.0.0.1:8000/SC/update-grade/${editedCourse}`,
+                { grade: gradeToSend, remark: editedRemark },
+                { withCredentials: true }
+            )
+        }
+        catch(err){
+            console.error("Editing failed: ", editedGrade);
+        }
+
+        await onSelectStudent(student_id);
+
+        setEditedCourse("");
         setEditIndex(null);
     };
 
@@ -32,6 +54,21 @@ export default function CourseTable({ courses, role }) {
                 Curriculum Residency Evaluation
                 
             </h3>
+
+            <div className={style.legendContainer}>
+                <div className={style.legendItem}>
+                    <div className={`${style.legendBox} ${style.passedBox}`}></div>
+                    <span>Passed</span>
+                </div>
+                <div className={style.legendItem}>
+                    <div className={`${style.legendBox} ${style.incompleteBox}`}></div>
+                    <span>Incomplete</span>
+                </div>
+                <div className={style.legendItem}>
+                    <div className={`${style.legendBox} ${style.failedBox}`}></div>
+                    <span>Failed</span>
+                </div>
+            </div>
 
             <table>
                 <thead>
@@ -80,7 +117,12 @@ export default function CourseTable({ courses, role }) {
                                 const isEditing = editIndex === index;
 
                                 rows.push(
-                                    <tr key={index}>
+                                    <tr key={index} className={
+                                            course.remark === "Passed"     ? style.passedRow :
+                                            course.remark === "Incomplete" ? style.incompleteRow :
+                                            course.remark === "Failed"     ? style.failedRow :
+                                            style.defaultRow
+                                    }>
                                         <td>{course.course_id}</td>
                                         <td>{course.course_name}</td>
                                         <td>{course.course_units}</td>
@@ -105,6 +147,7 @@ export default function CourseTable({ courses, role }) {
                                                     <option value="Passed">Passed</option>
                                                     <option value="Incomplete">Incomplete</option>
                                                     <option value="Failed">Failed</option>
+                                                    <option value="N/A">N/A</option>
                                                 </select>
                                             ) : (
                                                 course.remark
@@ -119,9 +162,9 @@ export default function CourseTable({ courses, role }) {
                                             <td>
                                                 <FaPencilAlt
                                                     style={{ cursor: "pointer" }}
-                                                    title="Edit row"
+                                                    title="Edit"
                                                     onClick={() =>
-                                                        handleEditClick(index, course.grade, course.remark)
+                                                        handleEditClick(index, course.course_id, course.grade, "Passed")
                                                     }
                                                 />
                                             </td>

@@ -1,9 +1,43 @@
+.legendContainer {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legendBox {
+  width: 20px;
+  height: 20px;
+  border: 1px solid black;
+}
+
+.passedBox {
+  background-color: #cce5ff;
+  border-color: #1c4da1;
+}
+
+.incompleteBox {
+  background-color: #fff3cd;
+  border-color: #b59b00;
+}
+
+.failedBox {
+  background-color: #f8d7da;
+  border-color: #b30000;
+}
+
+
 /* Base table styling already included, enhancing it */
 table {
     border-collapse: collapse;
-    margin: 0 auto;
     margin-bottom: 20px;
-    width: 95%;
+    width: 100%;
     background-color: white;
     font-size: 14px;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
@@ -17,11 +51,27 @@ thead tr {
     font-weight: bold;
 }
 
-tbody tr:nth-child(even) {
+.passedRow {
+  background-color: #cce5ff;
+}
+
+.incompleteRow {
+  background-color: #fff3cd;
+}
+
+.failedRow {
+  background-color: #f8d7da;
+}
+
+.defaultRow {
+  background-color: white;
+}
+
+tbody tr.defaultRow:nth-child(even) {
     background-color: #f9f9f9;
 }
 
-tbody tr:hover {
+tbody tr.defaultRow:hover {
     background-color: #eef4ff;
 }
 

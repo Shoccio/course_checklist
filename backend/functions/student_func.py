@@ -75,18 +75,18 @@ def getStudent(user: User, db_session: Session, student_id: str = None):
     courses = getStudentCourses(student_id, db_session)
 
     total_units = sum(course["course_units"] for course in courses)
-    units_taken = sum(course["course_units"] for course in courses if course["remark"] == "passed")
+    units_taken = sum(course["course_units"] for course in courses if course["remark"] == "Passed")
     gwa = getGWA(courses)
 
     student_data = {
         "student_id": detail.student_id,
         "name": f"{detail.student_l_name}, {detail.student_f_name} {detail.student_m_name or ''}".strip(),
-        "program": detail.program_id,  # or a joined Program.name if you're joining Program
+        "program": detail.program_id,  
         "year": detail.student_year,
-        "gwa": gwa,                  # 🔴 Not in model — add logic or remove
-        "units_taken": units_taken,         # 🔴 Not in model — add logic or remove
+        "gwa": gwa,                 
+        "units_taken": units_taken,        
         "total_units_required": total_units,
-        "status": detail.student_status.value,               # 🔴 Not in model — add logic or remove
+        "status": detail.student_status.value,              
         "role": user.role.value
     }
 

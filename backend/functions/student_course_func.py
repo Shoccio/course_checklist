@@ -81,7 +81,7 @@ def getGWA(courses):
         units = course.get("course_units")
         remark = course.get("remark", "")
 
-        if grade is not None and remark == "passed":
+        if grade is not None and remark == "Passed":
             total_weighted += grade * units
             total_units += units
 
@@ -90,3 +90,15 @@ def getGWA(courses):
 
     return round(total_weighted / total_units, 4)  # Rounded to 4 decimal places
 
+def updateGrades(course_id: str, grade: float, remark: str, db_connection: Session):
+    if grade == -1.0:
+        grade = None
+    try:
+        (db_connection.query(SC).filter_by(course_id = course_id)
+         .update({SC.grade: grade, SC.remarks: remark}, synchronize_session=False))
+        db_connection.commit()
+
+        return {"message": "Edit grade successful"}
+    except SQLAlchemyError:
+        db_connection.rollback()
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Error updating grades")

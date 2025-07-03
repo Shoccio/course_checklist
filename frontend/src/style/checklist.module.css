@@ -58,8 +58,8 @@
     align-items: center;
 
     color: white;
-    font-size: 45px;
-    font-weight: 900;
+    font-size: 49px;
+    font-weight: 600;
 
     background-color: #1c4da1;
     border-bottom-left-radius: 20px;
@@ -95,6 +95,8 @@
 
 .studentDetail{
     display: flex;
+    padding: 50px;
+    padding-top: 0px;
     justify-content: center;
     align-content: center;
     flex-direction: column;
@@ -103,8 +105,21 @@
 
 .studentDetail h3{
     display: flex;
+    position: relative;
     justify-content: center;
+    text-align: center;
     color: #1c4da1;
+}
+
+.buttons{
+    display: flex;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    gap: 20px;
+    position: absolute;
+    color: #1c4da1;
+    margin-left: auto;
 }
 
 .studentResidency{
@@ -120,7 +135,6 @@
 
 .lBlock span{
     margin: 5px;
-    margin-left: 50px;
 }
 
 .studentDetail .rBlock{
