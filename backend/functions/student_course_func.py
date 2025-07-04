@@ -102,3 +102,4 @@ def updateGrades(course_id: str, grade: float, remark: str, db_connection: Sessi
     except SQLAlchemyError:
         db_connection.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Error updating grades")
+    

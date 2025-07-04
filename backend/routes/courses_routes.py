@@ -22,6 +22,6 @@ def deleteCourse(course_id: str, db_connection: Session = Depends(get_db), _: No
     courses_func.deleteCourse(course_id, db_connection)
     return "Delete successful"
 
-@router.get("/say hi")
-def sayHi():
-    return {"Hello World!"}
+@router.get("/get/{program_id}")
+def getCourse(program_id: str, db_connection: Session = Depends(get_db), _: None = checkRole(["admin", "student"])):
+    return courses_func.getCoursebyProgram(program_id, db_connection)

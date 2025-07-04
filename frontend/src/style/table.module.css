@@ -67,6 +67,15 @@ thead tr {
   background-color: white;
 }
 
+thead tr{
+    border-bottom: 2px solid black;
+}
+
+tbody tr{
+    border-bottom: 2px solid black;
+    border-top: 2px solid black;
+}
+
 tbody tr.defaultRow:nth-child(even) {
     background-color: #f9f9f9;
 }

@@ -33,6 +33,7 @@ def editStudent(student: Student, student_id: str, db_session: Session):
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Student not found")
 
         user_func.editLoginId(student_model["student_id"], student_id, db_session)
+        sc_func.editStudentCourses(student_model["student_id"], student_id, db_session)
 
         for key, value in student_model.items():
             setattr(old_student, key, value)
@@ -80,13 +81,18 @@ def getStudent(user: User, db_session: Session, student_id: str = None):
 
     student_data = {
         "student_id": detail.student_id,
+        "student_email": detail.student_email,
+        "student_dept": detail.student_dept,
         "name": f"{detail.student_l_name}, {detail.student_f_name} {detail.student_m_name or ''}".strip(),
-        "program": detail.program_id,  
-        "year": detail.student_year,
+        "student_f_name": detail.student_f_name,
+        "student_l_name": detail.student_l_name,
+        "student_m_name": detail.student_m_name or "",
+        "program_id": detail.program_id,  
+        "student_year": detail.student_year,
         "gwa": gwa,                 
         "units_taken": units_taken,        
         "total_units_required": total_units,
-        "status": detail.student_status.value,              
+        "student_status": detail.student_status.value,              
         "role": user.role.value
     }
 

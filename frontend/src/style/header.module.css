@@ -1,0 +1,54 @@
+.logo{
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+}
+
+.signOut{
+    border: none;
+    border-style: solid;
+    border-color: #1c4da1;
+    border-width: 2px;
+    border-radius: 20px;
+    background-color: white;
+
+    height: 30px;
+    width: 100px;
+
+    color: #1c4da1;
+    font-weight: 300;
+
+    cursor: pointer;
+    transition: background-color 0.5s ease-in-out;
+
+    margin: 30px;
+}
+
+.signOut:hover{
+    background-color: #1c4da1;
+    color: white;
+}
+
+.banner{
+    display: flex;
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 500px;
+    height: 60px;
+
+    justify-content: center;
+    align-items: center;
+
+    color: white;
+    font-size: 49px;
+    font-weight: 600;
+
+    background-color: #1c4da1;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding: 1rem;
+    z-index: 2;
+}

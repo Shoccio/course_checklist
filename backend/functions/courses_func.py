@@ -50,18 +50,20 @@ def deleteCourse(course_id: str, db_connection: Session):
 
     return {"message": "Course deleted successfully"}
 
-def getCourse(student_id: str, program_id: str, db_connection: Session):
-    query = select(
-        literal(student_id).label("student_id"),
-        Course.course_id,
-        null().label("grade"),
-        null().label("remarks"),
-    ).select_from(
-        join(Course, PC, Course.course_id == PC.course_id)
-    ).where(
-        PC.program_id == program_id
-    ).order_by(
-        Course.course_year.asc(), Course.course_sem.asc()
+def getCoursebyProgram(program_id: str, db_connection: Session):
+    query = (
+        select(
+            Course.course_id,
+            Course.course_name,
+            Course.course_hours,
+            Course.course_units,
+            Course.course_preq,
+            Course.course_year,
+            Course.course_sem
+        )
+        .join(PC, Course.course_id == PC.course_id)
+        .where(PC.program_id == program_id)
+        .order_by(Course.course_year.asc(), Course.course_sem.asc())
     )
-
-    return db_connection.execute(query).fetchall()
+    result = db_connection.execute(query).mappings().all()
+    return result

@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { FaPencilAlt, FaPlus, FaPrint } from "react-icons/fa"; // pencil icon
-import Logo from "../imgs/uphsllogo.png";
 import style from "../style/checklist.module.css";
 import StudentSearchBar from "../component/searchBar";
-import CourseTable from "../component/table";
-import AddStudentModal from "../component/addStudent";
+import CourseTable from "../component/student_table";
+import AddStudent from "../component/addStudent";
+import EditStudent from "../component/editStudent";
+import HeaderWebsite from "../component/header";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function Checklist() {
+    let pageName = "CURRICULUM CHECKLIST"
     const navigate = useNavigate();
     const [student, setStudent] = useState(null);
     const [courses, setCourses] = useState([]);
+    const [isViewing, setIsViewing] = useState(false);
 
     const signOut = async () => {
         try {
@@ -31,9 +34,25 @@ export default function Checklist() {
                 { student: student },
                 { withCredentials:true }
             )
+
+            handleStudentSelect(student.student_id)
         }
         catch (err){
-            console.error("Adding failed:", err);
+            console.error("Adding failed: ", err);
+        }
+    }
+
+    const editStudent = async (student, old_id) => {
+        try {
+            await axios.put(`http://127.0.0.1:8000/student/edit/${old_id}`,
+                student ,
+                { withCredentials: true }
+            );
+
+            handleStudentSelect(student.student_id)
+        }
+        catch (err){
+            console.error("Editing failed: ", err);
         }
     }
 
@@ -44,8 +63,9 @@ export default function Checklist() {
             });
             setStudent(res.data.student);
             setCourses(res.data.courses);
+            setIsViewing(true);
         } catch (err) {
-            console.error("Failed to fetch student details:", err);
+            console.error("Failed to fetch student details: ", err);
         }
     };
 
@@ -58,7 +78,7 @@ export default function Checklist() {
             setCourses(res.data.courses);
         })
         .catch((err) => {
-            console.error("Failed to fetch student data:", err);
+            console.error("Failed to fetch student data: ", err);
             if (err.response?.status === 401) {
                 navigate("/");
             }
@@ -67,16 +87,7 @@ export default function Checklist() {
 
     return (
         <div className={style.curChecklist}>
-            <header>
-                <div className={style.logo}>
-                    <img src={Logo} alt="Logo" width="100" height="100" />
-                    <b>UNIVERSITY OF PERPETUAL HELP SYSTEM LAGUNA</b>
-                </div>
-                <button className={style.signOut} type="button" onClick={signOut}>
-                    SIGN OUT
-                </button>
-                <div className={style.banner}>CURRICULUM CHECKLIST</div>
-            </header>
+            <HeaderWebsite pageName={pageName} logOut={signOut} />
 
             <div className={style.studentBody}>
                     {student?.role === "admin" && <StudentSearchBar onSelectStudent={handleStudentSelect} />}
@@ -86,9 +97,8 @@ export default function Checklist() {
                     <h3>
                         STUDENT RESIDENCY EVALUATION
                         <span className={style.buttons}>
-                            <AddStudentModal onSubmit={addStudent} />
-                            <FaPencilAlt style={{cursor: "pointer"}}
-                                         title="Edit Student"/>
+                            <AddStudent onSubmit={addStudent} />
+                            <EditStudent onSubmit={editStudent} student={student} isViewing={isViewing} />
                             <FaPrint style={{cursor: "pointer"}}
                                      title="Print"/>
                         </span>
@@ -98,13 +108,13 @@ export default function Checklist() {
                     <div className={style.studentResidency}>
                         <div className={style.lBlock}>
                             <span>Student ID: {student?.student_id}</span>
-                            <span>Student Name: {student?.name}</span>
+                            <span>Student Name: {student?.student_l_name}, {student?.student_f_name}</span>
                             <span>Program/Major: {student?.program}</span>
                             <span>Total Units Required for this Course: {student?.total_units_required}</span>
                         </div>
                         <div className={style.rBlock}>
-                            <span>Year: {student?.year}</span>
-                            <span>Status: {student?.status}</span>
+                            <span>Year: {student?.student_year}</span>
+                            <span>Status: {student?.student_status}</span>
                             <span>Total Units Taken: {student?.units_taken}</span>
                             <span>GWA: {student?.gwa}</span>
                         </div>

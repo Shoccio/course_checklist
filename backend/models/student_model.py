@@ -6,8 +6,8 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 class Status(enum.Enum):
-    regular = "regular"
-    irregular = "irregular"
+    Regular = "Regular"
+    Irregular = "Irregular"
 
 class Student(Base):
     __tablename__ = "students"

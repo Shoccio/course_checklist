@@ -1,0 +1,58 @@
+.programChecklist{
+
+    background-color: white;
+}
+
+.programChecklist header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.courseBody{
+    display: flex;
+    flex-direction: column;
+    margin: 28px;
+}
+
+.courseBody select{
+    margin-left: auto;
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 450px;
+}
+
+.courseBody select:focus{
+    outline: none;
+    border-color: #1c4da1;
+    box-shadow: 0 0 3px #1c4da1;
+}
+
+.programDetail{
+    display: flex;
+    padding: 50px;
+    padding-top: 0px;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    background-color: rgb(244, 244, 244);
+}
+
+.programDetail h3{
+    display: flex;
+    position: relative;
+    justify-content: center;
+    text-align: center;
+    color: #1c4da1;
+}
+
+.yearSem{
+    color: #1c4da1;
+}
+
