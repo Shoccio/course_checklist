@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Modal from "./modal";
+import style from "../style/button.module.css"
 import { FaPen, FaPlus } from "react-icons/fa";
 import { createPortal } from "react-dom";
 
@@ -91,18 +92,15 @@ export default function EditStudent({ onSubmit, student, isViewing }) {
 
     return (
     <>
-        {isViewing === true ? (
         <FaPen
-            style={{ cursor: "pointer" }}
-            title="Edit Student"
-            onClick={() => setShowModal(true)}
+        title={isViewing ? "Edit Student" : "No student selected"}
+        onClick={() => {
+            if (!isViewing) return;
+            setShowModal(true);
+        }}
+        className={`${style.editIcon} ${!isViewing ? style.disabled : ""}`}
         />
-        ) : (
-        <FaPen
-            style={{ color: "grey", cursor: "not-allowed" }}
-            title="No student selected"
-        />
-        )}
+
 
         {showModal && createPortal(
                     <Modal title={title} programs={programs} formData={formData} 

@@ -1,0 +1,159 @@
+/* Table styling */
+table {
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  width: 100%;
+  background-color: white;
+  font-size: 14px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+thead tr {
+  background-color: #1c4da1;
+  color: white;
+  font-weight: bold;
+}
+
+.passedRow {
+  background-color: #cce5ff;
+}
+
+.incompleteRow {
+  background-color: #fff3cd;
+}
+
+.failedRow {
+  background-color: #f8d7da;
+}
+
+.defaultRow {
+  background-color: white;
+}
+
+thead tr {
+  border-bottom: 2px solid black;
+}
+
+tbody tr {
+  border-bottom: 2px solid black;
+  border-top: 2px solid black;
+}
+
+tbody tr.defaultRow:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tbody tr.defaultRow:hover {
+  background-color: #eef4ff;
+}
+
+td,
+th {
+  text-align: center;
+  padding: 10px 5px;
+}
+
+/* Editable inputs */
+table input[type="text"],
+table select {
+  width: 90%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  text-align: center;
+}
+
+table input[type="text"]:focus,
+table select:focus {
+  outline: none;
+  border-color: #1c4da1;
+  box-shadow: 0 0 3px #1c4da1;
+}
+
+/* Action buttons/icons */
+table button {
+  padding: 4px 10px;
+  background-color: #1c4da1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+table button:hover {
+  background-color: #163b7a;
+}
+
+table svg {
+  color: #1c4da1;
+  transition: color 0.3s ease;
+}
+
+table svg:hover {
+  color: #163b7a;
+}
+
+.yearSem {
+  color: #163b7a;
+}
+
+/* 🖐️ Only the drag icon gets grab cursor */
+.dragHandle {
+  cursor: grab;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+table input[type="text"],
+table select {
+    width: 90%;
+    padding: 5px 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+    background-color: #fff;
+    color: #000;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+table input[type="text"]:focus,
+table select:focus {
+    outline: none;
+    border-color: #1c4da1;
+    box-shadow: 0 0 5px rgba(28, 77, 161, 0.4);
+}
+
+table input[type="text"]:hover,
+table select:hover {
+    border-color: #1c4da1;
+}
+
+/* 👇 New rule for number inputs */
+table input[type="number"] {
+    width: 5ch; /* fits 2 digits + some padding */
+    padding: 5px 4px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+    background-color: #fff;
+    color: #000;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+table input[type="number"]:focus {
+    outline: none;
+    border-color: #1c4da1;
+    box-shadow: 0 0 5px rgba(28, 77, 161, 0.4);
+}
+
+table input[type="number"]:hover {
+    border-color: #1c4da1;
+}
