@@ -17,6 +17,11 @@ def editCourse(course: CourseSchema, course_id: str, db_connection: Session = De
     courses_func.editCourse(course, course_id, db_connection)
     return "Edit successful"
 
+@router.put("/update/{course_id}")
+def updateCourses(course_id: str, course: list[CourseSchema], 
+                  db_connection: Session = Depends(get_db), _: None = checkRole(["admin"])):
+    return courses_func.updateCourses(course_id, course, db_connection)
+
 @router.delete("/delete/{course_id}")
 def deleteCourse(course_id: str, db_connection: Session = Depends(get_db), _: None = checkRole(["admin"])):
     courses_func.deleteCourse(course_id, db_connection)

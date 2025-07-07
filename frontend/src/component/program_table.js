@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -16,12 +16,25 @@ function ordinal(n) {
   return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
 }
 
+function normalizeCourse(course) {
+  const isLab = course.course_id.trim().endsWith("L");
+  return {
+    ...course,
+    isLab,
+    hours_lec: isLab ? 0 : course.course_hours,
+    hours_lab: isLab ? course.course_hours : 0,
+    units_lec: isLab ? 0 : course.course_units,
+    units_lab: isLab ? course.course_units : 0,
+  };
+}
+
 function SortableRow({
   course,
   isTableEditing,
   isRowEditing,
   onRowEditClick,
   onRowSaveClick,
+  onRowCancelClick,
   onRowDeleteClick,
   onFieldChange,
   disableDrag,
@@ -35,7 +48,7 @@ function SortableRow({
     transition,
   } = useSortable({ id: course.course_id });
 
-  const isLab = course.course_id.trim().toLowerCase().endsWith("l");
+  const normalized = normalizeCourse(course);
 
   const rowStyle = {
     transform: CSS.Transform.toString(transform),
@@ -48,11 +61,11 @@ function SortableRow({
         {isRowEditing ? (
           <input
             type="text"
-            value={course.course_id}
+            value={normalized.course_id}
             onChange={(e) => onFieldChange("course_id", e.target.value)}
           />
         ) : (
-          course.course_id
+          normalized.course_id
         )}
       </td>
 
@@ -60,11 +73,11 @@ function SortableRow({
         {isRowEditing ? (
           <input
             type="text"
-            value={course.course_name}
+            value={normalized.course_name}
             onChange={(e) => onFieldChange("course_name", e.target.value)}
           />
         ) : (
-          course.course_name
+          normalized.course_name
         )}
       </td>
 
@@ -72,13 +85,11 @@ function SortableRow({
         {isRowEditing ? (
           <input
             type="number"
-            value={!isLab ? course.course_hours : 0}
-            onChange={(e) =>
-              onFieldChange("course_hours", isLab ? 0 : +e.target.value)
-            }
+            value={normalized.hours_lec}
+            onChange={(e) => onFieldChange("hours_lec", +e.target.value)}
           />
         ) : (
-          !isLab ? course.course_hours : 0
+          normalized.hours_lec
         )}
       </td>
 
@@ -86,13 +97,11 @@ function SortableRow({
         {isRowEditing ? (
           <input
             type="number"
-            value={isLab ? course.course_hours : 0}
-            onChange={(e) =>
-              onFieldChange("course_hours", isLab ? +e.target.value : 0)
-            }
+            value={normalized.hours_lab}
+            onChange={(e) => onFieldChange("hours_lab", +e.target.value)}
           />
         ) : (
-          isLab ? course.course_hours : 0
+          normalized.hours_lab
         )}
       </td>
 
@@ -100,13 +109,11 @@ function SortableRow({
         {isRowEditing ? (
           <input
             type="number"
-            value={!isLab ? course.course_units : 0}
-            onChange={(e) =>
-              onFieldChange("course_units", isLab ? 0 : +e.target.value)
-            }
+            value={normalized.units_lec}
+            onChange={(e) => onFieldChange("units_lec", +e.target.value)}
           />
         ) : (
-          !isLab ? course.course_units : 0
+          normalized.units_lec
         )}
       </td>
 
@@ -114,13 +121,11 @@ function SortableRow({
         {isRowEditing ? (
           <input
             type="number"
-            value={isLab ? course.course_units : 0}
-            onChange={(e) =>
-              onFieldChange("course_units", isLab ? +e.target.value : 0)
-            }
+            value={normalized.units_lab}
+            onChange={(e) => onFieldChange("units_lab", +e.target.value)}
           />
         ) : (
-          isLab ? course.course_units : 0
+          normalized.units_lab
         )}
       </td>
 
@@ -128,26 +133,23 @@ function SortableRow({
         {isRowEditing ? (
           <input
             type="text"
-            value={course.course_preq || ""}
+            value={normalized.course_preq || ""}
             onChange={(e) => onFieldChange("course_preq", e.target.value)}
           />
         ) : (
-          course.course_preq
+          normalized.course_preq
         )}
       </td>
 
       {isTableEditing && (
         <td className={style.actionCell}>
           {isRowEditing ? (
-            <button onClick={onRowSaveClick}>Save</button>
+            <span style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
+              <button onClick={onRowSaveClick}>Save</button>
+              <button onClick={onRowCancelClick}>Cancel</button>
+            </span>
           ) : (
-            <span
-              style={{
-                display: "flex",
-                gap: "0.5rem",
-                justifyContent: "center",
-              }}
-            >
+            <span style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
               <FaPencilAlt
                 style={{ cursor: "pointer" }}
                 title="Edit Row"
@@ -165,7 +167,11 @@ function SortableRow({
               <FaTrash
                 style={{ cursor: "pointer", color: "red" }}
                 title="Delete Row"
-                onClick={onRowDeleteClick}
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to delete this course?")) {
+                    onRowDeleteClick();
+                  }
+                }}
               />
             </span>
           )}
@@ -175,75 +181,43 @@ function SortableRow({
   );
 }
 
-export default function ProgramTable({ courses, isEditing, onReorder = () => {} }) {
-  const [localCourses, setLocalCourses] = useState([]);
-  const [editingRowId, setEditingRowId] = useState(null);
-
-  useEffect(() => {
-    setLocalCourses([...courses]);
-  }, [courses]);
+export default function ProgramTable({
+  courses,
+  isEditing,
+  editingRowId,
+  onSetEditingRowId,
+  onReorder,
+  onCourseChange,
+  onCourseDelete,
+  onAddCourse,
+}) {
+  const rows = [];
+  let prevYear = null,
+    prevSem = null;
 
   const handleDragEnd = (event) => {
-    const { active, over } = event;
+    if (!isEditing) return;
 
+    const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = localCourses.findIndex((c) => c.course_id === active.id);
-    const newIndex = localCourses.findIndex((c) => c.course_id === over.id);
+    const oldIndex = courses.findIndex((c) => c.course_id === active.id);
+    const newIndex = courses.findIndex((c) => c.course_id === over.id);
 
-    const reordered = arrayMove(localCourses, oldIndex, newIndex);
+    const reordered = arrayMove(courses, oldIndex, newIndex).map((course, index) => ({
+      ...course,
+      sequence: index + 1, // update sequence globally in new order
+    }));
 
-    setLocalCourses(reordered);
     onReorder(reordered);
   };
 
-  const handleFieldChange = (id, field, value) => {
-    setLocalCourses((prev) =>
-      prev.map((c) => (c.course_id === id ? { ...c, [field]: value } : c))
-    );
+  const handleAddCourseClick = (year, sem) => {
+    const newId = onAddCourse(year, sem);
+    if (newId) onSetEditingRowId(newId);
   };
 
-  const handleRowDelete = (id) => {
-    const confirmed = window.confirm("Are you sure you want to delete this course?");
-    if (confirmed) {
-      setLocalCourses((prev) => prev.filter((c) => c.course_id !== id));
-    }
-  };
-
-  const handleAddCourseBelow = (year, sem) => {
-    const newId = `new-${Date.now()}`;
-    const newCourse = {
-      course_id: "",
-      course_name: "",
-      course_year: year,
-      course_sem: sem,
-      course_hours: 0,
-      course_units: 0,
-      course_preq: "",
-    };
-
-    // find index of last course in this year+sem group
-    const insertIndex = localCourses.reduce((idx, c, i) => {
-      if (c.course_year === year && c.course_sem === sem) return i;
-      return idx;
-    }, -1);
-
-    const updated = [
-      ...localCourses.slice(0, insertIndex + 1),
-      { ...newCourse, course_id: newId },
-      ...localCourses.slice(insertIndex + 1),
-    ];
-
-    setLocalCourses(updated);
-    setEditingRowId(newId);
-  };
-
-  const rows = [];
-
-  let prevYear = null;
-  let prevSem = null;
-
-  localCourses.forEach((course) => {
+  courses.forEach((course) => {
     if (course.course_year !== prevYear || course.course_sem !== prevSem) {
       rows.push(
         <tr
@@ -255,14 +229,13 @@ export default function ProgramTable({ courses, isEditing, onReorder = () => {} 
             {isEditing && (
               <FaPlus
                 style={{ cursor: "pointer", color: "green", marginLeft: "1rem" }}
-                title="Add course to this semester"
-                onClick={() => handleAddCourseBelow(course.course_year, course.course_sem)}
+                title="Add course"
+                onClick={() => handleAddCourseClick(course.course_year, course.course_sem)}
               />
             )}
           </td>
         </tr>
       );
-
       prevYear = course.course_year;
       prevSem = course.course_sem;
     }
@@ -273,14 +246,11 @@ export default function ProgramTable({ courses, isEditing, onReorder = () => {} 
         course={course}
         isTableEditing={isEditing}
         isRowEditing={editingRowId === course.course_id}
-        onRowEditClick={() =>
-          setEditingRowId(editingRowId === course.course_id ? null : course.course_id)
-        }
-        onRowSaveClick={() => setEditingRowId(null)}
-        onRowDeleteClick={() => handleRowDelete(course.course_id)}
-        onFieldChange={(field, value) =>
-          handleFieldChange(course.course_id, field, value)
-        }
+        onRowEditClick={() => onSetEditingRowId(course.course_id)}
+        onRowSaveClick={() => onSetEditingRowId(null)}
+        onRowCancelClick={() => onSetEditingRowId(null)}
+        onRowDeleteClick={() => onCourseDelete(course.course_id)}
+        onFieldChange={(field, value) => onCourseChange(course.course_id, field, value)}
         disableDrag={!isEditing}
       />
     );
@@ -289,7 +259,7 @@ export default function ProgramTable({ courses, isEditing, onReorder = () => {} 
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <SortableContext
-        items={localCourses.map((c) => c.course_id)}
+        items={courses.map((c) => c.course_id)}
         strategy={verticalListSortingStrategy}
       >
         <table className={style.table}>

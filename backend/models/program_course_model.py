@@ -1,4 +1,4 @@
-from sqlalchemy import String, ForeignKey, Column
+from sqlalchemy import String, ForeignKey, Column, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from models.course_model import Course
 from models.programs_model import Program
@@ -10,3 +10,4 @@ class Program_Courses(base):
 
     course_id = Column(String(30), ForeignKey(Course.course_id), primary_key=True, nullable=False)
     program_id = Column(String(30), ForeignKey(Program.program_id), primary_key=True, nullable=False)
+    sequence = Column(Integer, nullable=False)
