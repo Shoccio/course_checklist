@@ -135,3 +135,10 @@ table svg:hover {
 .yearSem{
     color: #163b7a
 }
+
+@media print{
+  .tble th:last-child,
+  .tble td:last-child {
+    display: none !important;;
+  }
+}

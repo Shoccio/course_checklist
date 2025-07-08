@@ -11,6 +11,9 @@ class Grades(BaseModel):
     grade: float
     remark: str 
 
+@router.get("/get")
+def getStudentCourse(student: , db_connection: Session = Depends(get_db))
+
 @router.patch("/update-grade/{course_id}")
 def updateGrade(course_id: str, newGrades: Grades,  
                 db_connection: Session = Depends(get_db), _: None = checkRole(["admin"])):

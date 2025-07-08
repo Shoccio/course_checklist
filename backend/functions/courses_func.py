@@ -5,6 +5,7 @@ from schema.course_schema import CourseSchema
 from models.course_model import Course
 from models.program_course_model import Program_Courses as PC
 from functions.student_course_func import deleteCourses as DC
+from functions.program_course_func import updateOrder
 from fastapi import HTTPException, status
 
 def addCourse(course: CourseSchema, db_connection: Session):
@@ -64,19 +65,23 @@ def getCoursebyProgram(program_id: str, db_connection: Session):
             Course.units_lab,
             Course.hours_lec,
             Course.hours_lab,
-            Course.sequence
+            PC.sequence
         )
         .join(PC, Course.course_id == PC.course_id)
         .where(PC.program_id == program_id)
-        .order_by(Course.course_year.asc(), Course.course_sem.asc(), Course.sequence.asc())
+        .order_by(Course.course_year.asc(), Course.course_sem.asc(), PC.sequence.asc())
     )
     result = db_connection.execute(query).mappings().all()
     return result
 
-def updateCourses(course_id: str, courses: list[CourseSchema], db_connection: Session):
+def updateCourses(program_id: str, courses: list[CourseSchema], db_connection: Session):
     try:
         updated_ids = []
-        for index, course_data in enumerate(courses, start=1):
+        course_ids = [course.course_id for course in courses]
+
+        updateOrder(program_id, course_ids, db_connection)
+
+        for course_data in courses:
             db_course = db_connection.query(Course).filter(Course.course_id == course_data.course_id).first()
             if not db_course:
                 raise HTTPException(status_code=404, detail=f"Course {course_data.course_id} not found")
@@ -91,7 +96,6 @@ def updateCourses(course_id: str, courses: list[CourseSchema], db_connection: Se
             db_course.units_lab = course_data.units_lab
             db_course.hours_lec = course_data.hours_lec
             db_course.hours_lab = course_data.hours_lab
-            db_course.sequence = course_data.sequence
 
             updated_ids.append(course_data.course_id)
 

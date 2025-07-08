@@ -73,7 +73,7 @@ def getStudent(user: User, db_session: Session, student_id: str = None):
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Student not found")
 
 
-    courses = getStudentCourses(student_id, db_session)
+    courses = getStudentCourses(student_id, detail.program_id, db_session)
 
     total_units = sum(course["course_units"] for course in courses)
     units_taken = sum(course["course_units"] for course in courses if course["remark"] == "Passed")

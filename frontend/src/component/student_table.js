@@ -70,7 +70,7 @@ export default function CourseTable({ student_id, courses, role, onSelectStudent
                 </div>
             </div>
 
-            <table>
+            <table className={style.tble}>
                 <thead>
                     <tr>
                         <th>SUB CODE</th>

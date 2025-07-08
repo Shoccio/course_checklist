@@ -2,42 +2,22 @@ import { useState } from "react";
 import logo from "../imgs/uphsllogo.png";
 import { useNavigate } from "react-router-dom";
 import style from "./../style/login.module.css";
-import axios from "axios";
 
-export default function Login() {
+export default function Login({checkCredential, error}) {
     const navigate = useNavigate();
     const [login_id, setLoginID] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-
-    const checkCredential = async (username, password) => {
-        try {
-            const response = await axios.post(
-                'http://127.0.0.1:8000/auth/login',
-                new URLSearchParams({
-                    username: username.trim(),
-                    password: password.trim()
-                }),
-                {
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    withCredentials: true
-                }
-            );
-
-            console.log(response.data);
-            setError(""); // Clear any previous errors
-            navigate("/checklist");
-        } catch (error) {
-            console.error('Login failed: ', error.response?.data || error.message);
-            setError("Invalid login credentials. Please try again.");
-        }
-    };
 
     const handleSubmit = (e) => {
-        e.preventDefault(); // Prevent form from reloading page
-        checkCredential(login_id, password);
+        try{
+            e.preventDefault(); // Prevent form from reloading page
+            checkCredential(login_id, password);
+            navigate("/checklist");
+        }
+        catch (err){
+            console.error('Login failed: ', error.response?.data || error.message);
+        }
+        
     };
 
     return (

@@ -6,7 +6,7 @@ import ProgramTable from "../component/program_table";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function ProgramCourseList() {
+export default function ProgramCourseList({ currentUser }) {
   const pageName = "PROGRAM COURSELIST";
   const navigate = useNavigate();
 
@@ -96,7 +96,7 @@ export default function ProgramCourseList() {
         };
       });
 
-      await axios.put("http://127.0.0.1:8000/course/update", payload, { withCredentials: true });
+      await axios.put(`http://127.0.0.1:8000/course/update/${program_id}`, payload, { withCredentials: true });
 
       setOriginalCourses(courses);
       setIsEditing(false);

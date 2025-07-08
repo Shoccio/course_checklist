@@ -1,7 +1,9 @@
 # functions/student_course_func.py
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 from functions.course_utils import getCourse
 from models.student_course_model import Student_Course as SC
+from models.program_course_model import Program_Courses as PC
 from models.course_model import Course
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException, status
@@ -42,7 +44,7 @@ def deleteStudent(student_id: str, db_connection: Session):
         db_connection.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Error occured deleting student")
     
-def getStudentCourses(student_id: str, db: Session):
+def getStudentCourses(student_id: str, program_id: str, db: Session):
     results = (
         db.query(
             Course.course_name,
@@ -54,7 +56,9 @@ def getStudentCourses(student_id: str, db: Session):
             Course.course_id,
         )
         .join(Course, Course.course_id == SC.course_id)
+        .join(PC, and_(PC.course_id == Course.course_id, PC.program_id == program_id))
         .filter(SC.student_id == student_id)
+        .order_by(PC.sequence.asc())
         .all()
     )
 

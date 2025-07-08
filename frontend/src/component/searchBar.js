@@ -47,10 +47,10 @@ export default function StudentSearchBar({onSelectStudent}) {
                 placeholder="SEARCH STUDENT..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                onFocus={() => results.length > 0 && setShowDropdown(true)}
+                onFocus={() => results?.length > 0 && setShowDropdown(true)}
                 onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
             />
-            {showDropdown && results.length > 0 && (
+            {showDropdown && results?.length > 0 && (
                 <ul className={style.dropdown}>
                     {results.map((student, index) => (
                         <li

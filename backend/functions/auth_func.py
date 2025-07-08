@@ -29,7 +29,8 @@ def login(user_id: str, passwd: str, db_connection: Session):
         return {
             "access_token": token,
             "token_type":   "bearer",
-            "student_id":   user_id
+            "student_id":   user_id,
+            "role":         user_pass.role
         }
     except SQLAlchemyError:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Wrong ID/Password")
