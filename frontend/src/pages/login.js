@@ -24,9 +24,8 @@ export default function Login({checkCredential, error}) {
     return (
         <div className={`${style.page} ${style.loginPage}`}>
             <div className={style.login}>
-                <header>
-                    <img src={logo} alt="Logo" width="100" height="100" />
-                    <b>UNIVERSITY OF PERPETUAL HELP SYSTEM LAGUNA</b>
+                <header style={{height: '50px', padding: '10px'}}>
+                    <b>UNIVERSITY</b>
                 </header>
                 <div className={style.loginBody}>
                     <div className={`${style.block} ${style.leftBlock}`}>
@@ -69,7 +68,7 @@ export default function Login({checkCredential, error}) {
                     <div className={style.block}>
                         <h1>
                             <span className={style.welcome}>WELCOME!</span><br />
-                            <span className={style.perpetualite}>PERPETUALITE</span>
+                            <span className={style.perpetualite}>STUDENT</span>
                         </h1>
                     </div>
                 </div>

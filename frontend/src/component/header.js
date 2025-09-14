@@ -6,8 +6,7 @@ export default function HeaderWebsite({ pageName, logOut }){
     return(
         <header>
             <div className={style.logo}>
-                <img src={Logo} alt="Logo" width="100" height="100" />
-                <b>UNIVERSITY OF PERPETUAL HELP SYSTEM LAGUNA</b>
+                <b>--UNIVERSITY</b>
             </div>
             <button className={style.signOut} type="button" onClick={logOut}>
                 SIGN OUT
