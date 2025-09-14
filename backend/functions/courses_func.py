@@ -84,8 +84,21 @@ def updateCourses(program_id: str, courses: list[CourseSchema], db_connection: S
         for course_data in courses:
             db_course = db_connection.query(Course).filter(Course.course_id == course_data.course_id).first()
             if not db_course:
-                raise HTTPException(status_code=404, detail=f"Course {course_data.course_id} not found")
-
+                db_course = Course(
+                    course_id=course_data.course_id,
+                    course_name=course_data.course_name,
+                    course_hours=course_data.course_hours,
+                    course_units=course_data.course_units,
+                    course_preq=course_data.course_preq,
+                    course_year=course_data.course_year,
+                    course_sem=course_data.course_sem,
+                    units_lec=course_data.units_lec,
+                    units_lab=course_data.units_lab,
+                    hours_lec=course_data.hours_lec,
+                    hours_lab=course_data.hours_lab,
+                )
+                db_connection.add(db_course)
+                
             db_course.course_name = course_data.course_name
             db_course.course_hours = course_data.course_hours
             db_course.course_units = course_data.course_units

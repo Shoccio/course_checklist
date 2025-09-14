@@ -1,7 +1,11 @@
 .logo{
     display: flex;
     align-items: center;
-    font-size: 12px;
+    font-size: 15px;
+}
+
+.logo b{
+    margin-left: -10px;;
 }
 
 .signOut{
@@ -43,7 +47,7 @@
     align-items: center;
 
     color: white;
-    font-size: 49px;
+    font-size: 40px;
     font-weight: 600;
 
     background-color: #1c4da1;

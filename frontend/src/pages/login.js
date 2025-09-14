@@ -8,11 +8,12 @@ export default function Login({checkCredential, error}) {
     const [login_id, setLoginID] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         try{
             e.preventDefault(); // Prevent form from reloading page
-            checkCredential(login_id, password);
-            navigate("/checklist");
+            const success = await checkCredential(login_id, password);
+            if (success)
+                navigate("/checklist");
         }
         catch (err){
             console.error('Login failed: ', error.response?.data || error.message);

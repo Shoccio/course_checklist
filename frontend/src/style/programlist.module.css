@@ -93,3 +93,52 @@
 .buttons:hover {
   background-color: #163b7a;
 }
+
+.buttonLoc{
+    display: flex;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    gap: 20px;
+    position: absolute;
+    color: #1c4da1;
+    margin-left: auto;
+}
+
+@media print {
+  /* Hide header and action buttons, like reference */
+  header,
+  .buttonLoc,
+  .buttonLoc *,
+  .studentSearchBarWrapper {
+    display: none !important;
+  }
+
+  /* Print colors accurately */
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Ensure only courseBody prints cleanly */
+  .courseBody {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+  }
+
+  /* Table styling: same as reference */
+  .programDetail table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .programDetail th,
+  .programDetail td {
+    border: 2px solid #000;
+    padding: 4px;
+  }
+}
+

@@ -14,7 +14,7 @@
                 "api:app",
                 "--reload"
             ],
-            "cwd": "backend",
+            "cwd": "c:/Users/mynam/Desktop/Codes/OJT/Database/backend",
             "jinja": true
         }
     ]

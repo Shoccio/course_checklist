@@ -9,10 +9,11 @@ import HeaderWebsite from "../component/header";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function Checklist({currentUser}) {
+export default function Checklist({currentUser, setCurrentUser}) {
     const pageName = "CURRICULUM CHECKLIST";
     const navigate = useNavigate();
 
+    const [selectedStudent, setSelectedStudent] = useState(null);
     const [courses, setCourses] = useState([]);
     const [isViewing, setIsViewing] = useState(false);
 
@@ -54,21 +55,25 @@ export default function Checklist({currentUser}) {
                 withCredentials: true,
             });
             setSelectedStudent(res.data.student);
-            setCourses(res.data.courses);
+            fetchStudentData(res.data.student);
             setIsViewing(true);
         } catch (err) {
             console.error("Failed to fetch student details: ", err);
         }
     };
 
-    const fetchStudentData = async () => {
+    const fetchStudentData = async (user) => {
+        const params = new URLSearchParams({
+            student_id: user?.student_id,
+            program_id: user?.program_id
+        }).toString();
         try {
             const res = await axios.get(
-                `http://127.0.0.1:8000/course/get/${currentUser?.program_id}`,
+                `http://127.0.0.1:8000/SC/get?${params}`,
                 { withCredentials: true }
             );
 
-            setCourses(res.data.courses);
+            setCourses(res.data);
 
         } catch (err) {
             console.error("Failed to fetch student data: ", err);
@@ -78,7 +83,23 @@ export default function Checklist({currentUser}) {
 
     // On initial mount — get the logged-in user and show them
     useEffect(() => {
-        fetchStudentData();
+        const fetchCurrentUser = async () => {
+            try {
+                const res = await axios.get("http://127.0.0.1:8000/student/get/details", {
+                    withCredentials: true
+                });
+                setCurrentUser(res.data.student);
+            } catch (err) {
+                console.error("Failed to fetch current user: ", err);
+                setCurrentUser(null);
+                // optionally redirect to login
+                // navigate("/");
+            }
+        };
+        fetchCurrentUser();
+
+        if(currentUser?.role === "student")
+            fetchStudentData(currentUser);
     }, []);
 
     return (

@@ -78,4 +78,6 @@ def checkRole(roles: list[str]):
         if role not in roles:
             raise HTTPException(status.HTTP_403_FORBIDDEN, "User is not authorized to do current action")
         
+        return role
+        
     return Depends(checker)

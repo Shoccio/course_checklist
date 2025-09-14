@@ -40,12 +40,14 @@ function App() {
 
     });
     
+    return response.status === 200;
+
   };
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login checkCredential={checkCredential} error={error}/>} />
-        <Route path="/checklist" element={<Checklist currentUser={currentUser}/>} />
+        <Route path="/" element={<Login checkCredential={checkCredential} setCurrentUser={setCurrentUser} error={error}/>} />
+        <Route path="/checklist" element={<Checklist currentUser={currentUser} setCurrentUser={setCurrentUser}/>} />
         <Route path="/program-checklist" element={<ProgramCourseList />} />
       </Routes>
     </Router>

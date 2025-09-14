@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { FaPencilAlt } from "react-icons/fa";
+import React, { useEffect, useRef, useState } from "react";
+import { FaPencilAlt, FaPrint } from "react-icons/fa";
 import style from "../style/programlist.module.css";
 import HeaderWebsite from "../component/header";
 import ProgramTable from "../component/program_table";
@@ -10,18 +10,26 @@ export default function ProgramCourseList({ currentUser }) {
   const pageName = "PROGRAM COURSELIST";
   const navigate = useNavigate();
 
-  const [programs, setPrograms] = useState([]);
+  const [programs, setPrograms] = useState({});
   const [program_id, setProgram] = useState("");
   const [courses, setCourses] = useState([]);
   const [originalCourses, setOriginalCourses] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
 
+  const printRef = useRef();
+
   useEffect(() => {
     const getProgram = async () => {
       try {
         const progrms = await axios.get("http://127.0.0.1:8000/program/get");
-        setPrograms(progrms.data);
+
+        const programsMap = {};
+        progrms.data.forEach((p) => {
+          programsMap[p.program_id] = p;
+        });
+        setPrograms(programsMap);
+
       } catch (err) {
         console.error("Getting programs failed: ", err);
       }
@@ -92,7 +100,7 @@ export default function ProgramCourseList({ currentUser }) {
           hours_lab: isLab ? c.course_hours : 0,
           units_lec: isLab ? 0 : c.course_units,
           units_lab: isLab ? c.course_units : 0,
-          sequence: c.sequence, // include updated sequence!
+          sequence: c.sequence,
         };
       });
 
@@ -106,10 +114,14 @@ export default function ProgramCourseList({ currentUser }) {
     }
   };
 
+  const handlePrint = () => {
+    window.print()
+  };
+
   return (
     <div className={style.programChecklist}>
       <HeaderWebsite pageName={pageName} logOut={signOut} />
-      <div className={style.courseBody}>
+      <div className={style.courseBody} ref={printRef}>
         <select
           name="program_id"
           value={program_id}
@@ -118,32 +130,45 @@ export default function ProgramCourseList({ currentUser }) {
           disabled={isEditing}
         >
           <option value="">Select Program</option>
-          {programs.map((program) => (
+          {Object.values(programs).map((program) => (
             <option key={program.program_id} value={program.program_id}>
               {program.program_name}
             </option>
           ))}
         </select>
 
+        <div>
+          Specialization: {programs[program_id]?.specialization || "N/A"}
+        </div>
+
         <div className={style.programDetail}>
           <h3 style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             PROGRAM COURSELIST
-            {!isEditing ? (
-              <FaPencilAlt
-                title={program_id === "" ? "Select a program to enable editing" : "Enable Editing"}
-                className={`${style.editIcon} ${program_id === "" ? style.disabled : ""}`}
-                onClick={startEditing}
-              />
-            ) : (
-              <>
-                <button onClick={saveEditing} className={style.buttons}>
-                  Save
-                </button>
-                <button onClick={cancelEditing} className={style.buttons}>
-                  Cancel
-                </button>
-              </>
-            )}
+            <span className={style.buttonLoc}>
+              {!isEditing ? (
+                <>
+                  <FaPencilAlt
+                    title={program_id === "" ? "Select a program to enable editing" : "Enable Editing"}
+                    className={`${style.editIcon} ${program_id === "" ? style.disabled : ""}`}
+                    onClick={startEditing}
+                  />
+                  <FaPrint
+                    title="Print Program Course List"
+                    className={style.printIcon}
+                    onClick={handlePrint}
+                  />
+                </>
+              ) : (
+                <>
+                  <button onClick={saveEditing} className={style.buttons}>
+                    Save
+                  </button>
+                  <button onClick={cancelEditing} className={style.buttons}>
+                    Cancel
+                  </button>
+                </>
+              )}
+            </span>
           </h3>
 
           <ProgramTable
