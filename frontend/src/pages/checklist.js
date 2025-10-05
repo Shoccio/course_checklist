@@ -8,7 +8,7 @@ import EditStudent from "../component/editStudent";
 import HeaderWebsite from "../component/header";
 import { useNavigate } from "react-router-dom";
 
-// Static mock data (instead of API)
+// ✅ Shared mock data for both search and selection
 const mockStudents = [
   {
     student_id: "2023-001",
@@ -20,6 +20,30 @@ const mockStudents = [
     student_status: "Regular",
     units_taken: 132,
     gwa: 1.75,
+    role: "student",
+  },
+  {
+    student_id: "2023-002",
+    student_f_name: "Jane",
+    student_l_name: "Smith",
+    program_id: "BSIT",
+    total_units_required: 145,
+    student_year: "3rd",
+    student_status: "Irregular",
+    units_taken: 110,
+    gwa: 1.95,
+    role: "student",
+  },
+  {
+    student_id: "2022-010",
+    student_f_name: "Michael",
+    student_l_name: "Johnson",
+    program_id: "BSCS",
+    total_units_required: 150,
+    student_year: "4th",
+    student_status: "Regular",
+    units_taken: 138,
+    gwa: 1.70,
     role: "student",
   },
 ];
@@ -60,7 +84,10 @@ const mockCourses = [
   },
 ];
 
-export default function Checklist({ currentUser = { role: "admin" }, setCurrentUser = () => {} }) {
+export default function Checklist({
+  currentUser = { role: "admin" },
+  setCurrentUser = () => {},
+}) {
   const pageName = "CURRICULUM CHECKLIST";
   const navigate = useNavigate();
 
@@ -68,12 +95,10 @@ export default function Checklist({ currentUser = { role: "admin" }, setCurrentU
   const [courses, setCourses] = useState([]);
   const [isViewing, setIsViewing] = useState(false);
 
-  // Static logout just returns to home
   const signOut = () => {
     navigate("/");
   };
 
-  // Simulate adding/editing students locally
   const addStudent = (student) => {
     console.log("Static add student:", student);
   };
@@ -82,7 +107,6 @@ export default function Checklist({ currentUser = { role: "admin" }, setCurrentU
     console.log("Static edit student:", student, "replacing", old_id);
   };
 
-  // "Search" simulation — called from StudentSearchBar
   const handleStudentSelect = (student_id) => {
     const found = mockStudents.find((s) => s.student_id === student_id);
     if (found) {
@@ -94,7 +118,6 @@ export default function Checklist({ currentUser = { role: "admin" }, setCurrentU
     }
   };
 
-  // Simulate loading the current user
   useEffect(() => {
     setCurrentUser({ role: "admin" });
   }, []);
@@ -106,7 +129,11 @@ export default function Checklist({ currentUser = { role: "admin" }, setCurrentU
       <div className={style.studentBody}>
         <div className={style.studentSearchBarWrapper}>
           {currentUser?.role === "admin" && (
-            <StudentSearchBar onSelectStudent={handleStudentSelect} />
+            // ✅ Pass mockStudents to StudentSearchBar
+            <StudentSearchBar
+              onSelectStudent={handleStudentSelect}
+              students={mockStudents}
+            />
           )}
         </div>
 

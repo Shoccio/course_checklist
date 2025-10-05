@@ -1,32 +1,10 @@
 import React, { useState, useEffect } from "react";
 import style from "../style/searchbar.module.css";
 
-export default function StudentSearchBar({ onSelectStudent }) {
+export default function StudentSearchBar({ onSelectStudent, students = [] }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-
-  // Static mock data
-  const mockStudents = [
-    {
-      student_id: "2023-001",
-      student_f_name: "John",
-      student_l_name: "Doe",
-      program_id: "BSCS",
-    },
-    {
-      student_id: "2023-002",
-      student_f_name: "Jane",
-      student_l_name: "Smith",
-      program_id: "BSIT",
-    },
-    {
-      student_id: "2022-010",
-      student_f_name: "Michael",
-      student_l_name: "Johnson",
-      program_id: "BSCS",
-    },
-  ];
 
   useEffect(() => {
     if (query.trim() === "") {
@@ -36,7 +14,7 @@ export default function StudentSearchBar({ onSelectStudent }) {
     }
 
     const delayDebounce = setTimeout(() => {
-      const filtered = mockStudents.filter((student) => {
+      const filtered = students.filter((student) => {
         const fullName = `${student.student_f_name} ${student.student_l_name}`.toLowerCase();
         return (
           student.student_id.toLowerCase().includes(query.toLowerCase()) ||
@@ -49,7 +27,7 @@ export default function StudentSearchBar({ onSelectStudent }) {
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [query]);
+  }, [query, students]);
 
   const handleSelect = (student) => {
     onSelectStudent(student.student_id);
