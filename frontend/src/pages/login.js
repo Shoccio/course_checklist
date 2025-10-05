@@ -11,8 +11,8 @@ export default function Login({checkCredential, error}) {
     const handleSubmit = async (e) => {
         try{
             e.preventDefault(); // Prevent form from reloading page
-            const success = await checkCredential(login_id, password);
-            if (success)
+            //const success = await checkCredential(login_id, password);
+            //if (success)
                 navigate("/checklist");
         }
         catch (err){

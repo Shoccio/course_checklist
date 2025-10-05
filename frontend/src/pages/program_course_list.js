@@ -4,11 +4,101 @@ import style from "../style/programlist.module.css";
 import HeaderWebsite from "../component/header";
 import ProgramTable from "../component/program_table";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 export default function ProgramCourseList({ currentUser }) {
   const pageName = "PROGRAM COURSELIST";
   const navigate = useNavigate();
+
+  // ✅ Static data instead of fetching from backend
+  const staticPrograms = {
+    "BSCS": {
+      program_id: "BSCS",
+      program_name: "Bachelor of Science in Computer Science",
+      specialization: "Software Development",
+    },
+    "BSIT": {
+      program_id: "BSIT",
+      program_name: "Bachelor of Science in Information Technology",
+      specialization: "Network Administration",
+    },
+  };
+
+  const staticCourses = {
+    "BSCS": [
+      {
+        course_id: "CS101",
+        course_name: "Introduction to Programming",
+        course_year: 1,
+        course_sem: 1,
+        course_hours: 3,
+        course_units: 3,
+        course_preq: "",
+        hours_lec: 3,
+        hours_lab: 0,
+        units_lec: 3,
+        units_lab: 0,
+        sequence: 1,
+      },
+      {
+        course_id: "CS102L",
+        course_name: "Programming Laboratory",
+        course_year: 1,
+        course_sem: 1,
+        course_hours: 3,
+        course_units: 1,
+        course_preq: "CS101",
+        hours_lec: 0,
+        hours_lab: 3,
+        units_lec: 0,
+        units_lab: 1,
+        sequence: 2,
+      },
+      {
+        course_id: "CS201",
+        course_name: "Data Structures and Algorithms",
+        course_year: 2,
+        course_sem: 1,
+        course_hours: 3,
+        course_units: 3,
+        course_preq: "CS101",
+        hours_lec: 3,
+        hours_lab: 0,
+        units_lec: 3,
+        units_lab: 0,
+        sequence: 3,
+      },
+    ],
+    "BSIT": [
+      {
+        course_id: "IT101",
+        course_name: "Computer Systems Fundamentals",
+        course_year: 1,
+        course_sem: 1,
+        course_hours: 3,
+        course_units: 3,
+        course_preq: "",
+        hours_lec: 3,
+        hours_lab: 0,
+        units_lec: 3,
+        units_lab: 0,
+        sequence: 1,
+      },
+      {
+        course_id: "IT102L",
+        course_name: "Networking Basics Laboratory",
+        course_year: 1,
+        course_sem: 2,
+        course_hours: 3,
+        course_units: 1,
+        course_preq: "IT101",
+        hours_lec: 0,
+        hours_lab: 3,
+        units_lec: 0,
+        units_lab: 1,
+        sequence: 2,
+      },
+    ],
+  };
 
   const [programs, setPrograms] = useState({});
   const [program_id, setProgram] = useState("");
@@ -20,49 +110,18 @@ export default function ProgramCourseList({ currentUser }) {
   const printRef = useRef();
 
   useEffect(() => {
-    const getProgram = async () => {
-      try {
-        const progrms = await axios.get("http://127.0.0.1:8000/program/get");
-
-        const programsMap = {};
-        progrms.data.forEach((p) => {
-          programsMap[p.program_id] = p;
-        });
-        setPrograms(programsMap);
-
-      } catch (err) {
-        console.error("Getting programs failed: ", err);
-      }
-    };
-    getProgram();
+    setPrograms(staticPrograms);
   }, []);
 
-  const signOut = async () => {
-    try {
-      await axios.post("http://127.0.0.1:8000/auth/logout", {}, { withCredentials: true });
-    } catch (err) {
-      console.error("Logout failed:", err);
-    } finally {
-      navigate("/");
-    }
+  const signOut = () => {
+    alert("Logged out (mock)");
+    navigate("/");
   };
 
-  const getCourses = async (program_id) => {
-    try {
-      const res = await axios.get(`http://127.0.0.1:8000/course/get/${program_id}`, { withCredentials: true });
-      const mapped = res.data.map((c, idx) => ({
-        ...c,
-        hours_lec: c.hours_lec ?? 0,
-        hours_lab: c.hours_lab ?? 0,
-        units_lec: c.units_lec ?? 0,
-        units_lab: c.units_lab ?? 0,
-        sequence: c.sequence ?? (idx + 1),
-      }));
-      setCourses(mapped);
-      setOriginalCourses(mapped);
-    } catch (err) {
-      console.error("Getting Course failed: ", err);
-    }
+  const getCourses = (program_id) => {
+    const mapped = staticCourses[program_id] || [];
+    setCourses(mapped);
+    setOriginalCourses(mapped);
   };
 
   const handleProgramChange = (e) => {
@@ -90,32 +149,15 @@ export default function ProgramCourseList({ currentUser }) {
     setEditingRowId(null);
   };
 
-  const saveEditing = async () => {
-    try {
-      const payload = courses.map((c) => {
-        const isLab = c.course_id.trim().toLowerCase().endsWith("l");
-        return {
-          ...c,
-          hours_lec: isLab ? 0 : c.course_hours,
-          hours_lab: isLab ? c.course_hours : 0,
-          units_lec: isLab ? 0 : c.course_units,
-          units_lab: isLab ? c.course_units : 0,
-          sequence: c.sequence,
-        };
-      });
-
-      await axios.put(`http://127.0.0.1:8000/course/update/${program_id}`, payload, { withCredentials: true });
-
-      setOriginalCourses(courses);
-      setIsEditing(false);
-      setEditingRowId(null);
-    } catch (err) {
-      console.error("Failed to save courses", err);
-    }
+  const saveEditing = () => {
+    setOriginalCourses(courses);
+    setIsEditing(false);
+    setEditingRowId(null);
+    alert("Courses saved (mock)");
   };
 
   const handlePrint = () => {
-    window.print()
+    window.print();
   };
 
   return (
@@ -179,17 +221,7 @@ export default function ProgramCourseList({ currentUser }) {
             onReorder={(newOrder) => setCourses(newOrder)}
             onCourseChange={(id, field, value) => {
               setCourses((prev) =>
-                prev.map((c) => {
-                  if (c.course_id !== id) return c;
-                  const isLab = c.course_id.trim().toLowerCase().endsWith("l");
-                  if ((field === "hours_lec" || field === "units_lec") && !isLab) {
-                    return { ...c, [field]: value };
-                  }
-                  if ((field === "hours_lab" || field === "units_lab") && isLab) {
-                    return { ...c, [field]: value };
-                  }
-                  return { ...c, [field]: value };
-                })
+                prev.map((c) => (c.course_id === id ? { ...c, [field]: value } : c))
               );
             }}
             onCourseDelete={(id) => setCourses((prev) => prev.filter((c) => c.course_id !== id))}
@@ -209,15 +241,7 @@ export default function ProgramCourseList({ currentUser }) {
                 units_lab: 0,
                 sequence: courses.length + 1,
               };
-              const insertIndex = courses.reduce((idx, c, i) => {
-                if (c.course_year === year && c.course_sem === sem) return i;
-                return idx;
-              }, -1);
-              const updated = [
-                ...courses.slice(0, insertIndex + 1),
-                newCourse,
-                ...courses.slice(insertIndex + 1),
-              ];
+              const updated = [...courses, newCourse];
               setCourses(updated);
               return newId;
             }}

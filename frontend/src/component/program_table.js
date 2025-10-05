@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -49,7 +49,6 @@ function SortableRow({
   } = useSortable({ id: course.course_id });
 
   const normalized = normalizeCourse(course);
-
   const rowStyle = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -182,18 +181,63 @@ function SortableRow({
 }
 
 export default function ProgramTable({
-  courses,
-  isEditing,
-  editingRowId,
+  courses: externalCourses,
+  isEditing: externalEditing,
+  editingRowId: externalEditingRowId,
   onSetEditingRowId,
   onReorder,
   onCourseChange,
   onCourseDelete,
   onAddCourse,
 }) {
-  const rows = [];
-  let prevYear = null,
-    prevSem = null;
+  // Default sample data
+  const defaultCourses = [
+    {
+      course_id: "CS101",
+      course_name: "Introduction to Computer Science",
+      course_hours: 3,
+      course_units: 3,
+      course_preq: "",
+      course_year: 1,
+      course_sem: 1,
+      sequence: 1,
+    },
+    {
+      course_id: "CS101L",
+      course_name: "Intro to Computer Science Lab",
+      course_hours: 2,
+      course_units: 1,
+      course_preq: "CS101",
+      course_year: 1,
+      course_sem: 1,
+      sequence: 2,
+    },
+    {
+      course_id: "MATH102",
+      course_name: "Discrete Mathematics",
+      course_hours: 3,
+      course_units: 3,
+      course_preq: "",
+      course_year: 1,
+      course_sem: 2,
+      sequence: 3,
+    },
+    {
+      course_id: "CS201",
+      course_name: "Data Structures",
+      course_hours: 3,
+      course_units: 3,
+      course_preq: "CS101",
+      course_year: 2,
+      course_sem: 1,
+      sequence: 4,
+    },
+  ];
+
+  // Local states with fallbacks
+  const [courses, setCourses] = useState(externalCourses || defaultCourses);
+  const [isEditing, setIsEditing] = useState(externalEditing || true);
+  const [editingRowId, setEditingRowId] = useState(externalEditingRowId || null);
 
   const handleDragEnd = (event) => {
     if (!isEditing) return;
@@ -206,16 +250,47 @@ export default function ProgramTable({
 
     const reordered = arrayMove(courses, oldIndex, newIndex).map((course, index) => ({
       ...course,
-      sequence: index + 1, // update sequence globally in new order
+      sequence: index + 1,
     }));
 
-    onReorder(reordered);
+    setCourses(reordered);
+    onReorder?.(reordered);
   };
 
   const handleAddCourseClick = (year, sem) => {
-    const newId = onAddCourse(year, sem);
-    if (newId) onSetEditingRowId(newId);
+    const newCourse = {
+      course_id: `NEW${Date.now()}`,
+      course_name: "New Course",
+      course_hours: 3,
+      course_units: 3,
+      course_preq: "",
+      course_year: year,
+      course_sem: sem,
+      sequence: courses.length + 1,
+    };
+    const updated = [...courses, newCourse];
+    setCourses(updated);
+    onAddCourse?.(year, sem);
+    setEditingRowId(newCourse.course_id);
   };
+
+  const handleCourseChange = (id, field, value) => {
+    const updated = courses.map((c) =>
+      c.course_id === id ? { ...c, [field]: value } : c
+    );
+    setCourses(updated);
+    onCourseChange?.(id, field, value);
+  };
+
+  const handleCourseDelete = (id) => {
+    const updated = courses.filter((c) => c.course_id !== id);
+    setCourses(updated);
+    onCourseDelete?.(id);
+  };
+
+  const rows = [];
+  let prevYear = null,
+    prevSem = null;
 
   courses.forEach((course) => {
     if (course.course_year !== prevYear || course.course_sem !== prevSem) {
@@ -246,11 +321,11 @@ export default function ProgramTable({
         course={course}
         isTableEditing={isEditing}
         isRowEditing={editingRowId === course.course_id}
-        onRowEditClick={() => onSetEditingRowId(course.course_id)}
-        onRowSaveClick={() => onSetEditingRowId(null)}
-        onRowCancelClick={() => onSetEditingRowId(null)}
-        onRowDeleteClick={() => onCourseDelete(course.course_id)}
-        onFieldChange={(field, value) => onCourseChange(course.course_id, field, value)}
+        onRowEditClick={() => setEditingRowId(course.course_id)}
+        onRowSaveClick={() => setEditingRowId(null)}
+        onRowCancelClick={() => setEditingRowId(null)}
+        onRowDeleteClick={() => handleCourseDelete(course.course_id)}
+        onFieldChange={(field, value) => handleCourseChange(course.course_id, field, value)}
         disableDrag={!isEditing}
       />
     );

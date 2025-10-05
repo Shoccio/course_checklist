@@ -7,157 +7,168 @@ import AddStudent from "../component/addStudent";
 import EditStudent from "../component/editStudent";
 import HeaderWebsite from "../component/header";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
-export default function Checklist({currentUser, setCurrentUser}) {
-    const pageName = "CURRICULUM CHECKLIST";
-    const navigate = useNavigate();
+// Static mock data (instead of API)
+const mockStudents = [
+  {
+    student_id: "2023-001",
+    student_f_name: "John",
+    student_l_name: "Doe",
+    program_id: "BSCS",
+    total_units_required: 150,
+    student_year: "4th",
+    student_status: "Regular",
+    units_taken: 132,
+    gwa: 1.75,
+    role: "student",
+  },
+];
 
-    const [selectedStudent, setSelectedStudent] = useState(null);
-    const [courses, setCourses] = useState([]);
-    const [isViewing, setIsViewing] = useState(false);
+const mockCourses = [
+  {
+    course_id: "CS101",
+    course_name: "Introduction to Programming",
+    course_year: 1,
+    course_sem: 1,
+    course_hours: 3,
+    course_units: 3,
+    course_preq: "",
+    grade: "1.75",
+    remark: "Passed",
+  },
+  {
+    course_id: "CS102",
+    course_name: "Data Structures",
+    course_year: 1,
+    course_sem: 2,
+    course_hours: 3,
+    course_units: 3,
+    course_preq: "CS101",
+    grade: "2.00",
+    remark: "Passed",
+  },
+  {
+    course_id: "CS201",
+    course_name: "Algorithms",
+    course_year: 2,
+    course_sem: 1,
+    course_hours: 3,
+    course_units: 3,
+    course_preq: "CS102",
+    grade: "1.50",
+    remark: "Passed",
+  },
+];
 
-    const signOut = async () => {
-        try {
-            await axios.post("http://127.0.0.1:8000/auth/logout", {}, { withCredentials: true });
-        } catch (err) {
-            console.error("Logout failed:", err);
-        } finally {
-            navigate("/");
-        }
-    };
+export default function Checklist({ currentUser = { role: "admin" }, setCurrentUser = () => {} }) {
+  const pageName = "CURRICULUM CHECKLIST";
+  const navigate = useNavigate();
 
-    const addStudent = async (student) => {
-        try {
-            await axios.post("http://127.0.0.1:8000/student/add", { student }, { withCredentials: true });
-            handleStudentSelect(student.student_id);
-        } catch (err) {
-            console.error("Adding failed:", err);
-        }
-    };
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [isViewing, setIsViewing] = useState(false);
 
-    const editStudent = async (student, old_id) => {
-        try {
-            await axios.put(
-                `http://127.0.0.1:8000/student/edit/${old_id}`,
-                student,
-                { withCredentials: true }
-            );
-            handleStudentSelect(student.student_id);
-        } catch (err) {
-            console.error("Editing failed:", err);
-        }
-    };
+  // Static logout just returns to home
+  const signOut = () => {
+    navigate("/");
+  };
 
-    const handleStudentSelect = async (student_id) => {
-        try {
-            const res = await axios.get(`http://127.0.0.1:8000/student/get/${student_id}`, {
-                withCredentials: true,
-            });
-            setSelectedStudent(res.data.student);
-            fetchStudentData(res.data.student);
-            setIsViewing(true);
-        } catch (err) {
-            console.error("Failed to fetch student details: ", err);
-        }
-    };
+  // Simulate adding/editing students locally
+  const addStudent = (student) => {
+    console.log("Static add student:", student);
+  };
 
-    const fetchStudentData = async (user) => {
-        const params = new URLSearchParams({
-            student_id: user?.student_id,
-            program_id: user?.program_id
-        }).toString();
-        try {
-            const res = await axios.get(
-                `http://127.0.0.1:8000/SC/get?${params}`,
-                { withCredentials: true }
-            );
+  const editStudent = (student, old_id) => {
+    console.log("Static edit student:", student, "replacing", old_id);
+  };
 
-            setCourses(res.data);
+  // "Search" simulation — called from StudentSearchBar
+  const handleStudentSelect = (student_id) => {
+    const found = mockStudents.find((s) => s.student_id === student_id);
+    if (found) {
+      setSelectedStudent(found);
+      setCourses(mockCourses);
+      setIsViewing(true);
+    } else {
+      alert("Student not found");
+    }
+  };
 
-        } catch (err) {
-            console.error("Failed to fetch student data: ", err);
-        }
-    };
+  // Simulate loading the current user
+  useEffect(() => {
+    setCurrentUser({ role: "admin" });
+  }, []);
 
+  return (
+    <div className={style.curChecklist}>
+      <HeaderWebsite pageName={pageName} logOut={signOut} />
 
-    // On initial mount — get the logged-in user and show them
-    useEffect(() => {
-        const fetchCurrentUser = async () => {
-            try {
-                const res = await axios.get("http://127.0.0.1:8000/student/get/details", {
-                    withCredentials: true
-                });
-                setCurrentUser(res.data.student);
-            } catch (err) {
-                console.error("Failed to fetch current user: ", err);
-                setCurrentUser(null);
-                // optionally redirect to login
-                // navigate("/");
-            }
-        };
-        fetchCurrentUser();
-
-        if(currentUser?.role === "student")
-            fetchStudentData(currentUser);
-    }, []);
-
-    return (
-        <div className={style.curChecklist}>
-            <HeaderWebsite pageName={pageName} logOut={signOut} />
-
-            <div className={style.studentBody}>
-                <div className={style.studentSearchBarWrapper}>
-                    {currentUser?.role === "admin" && (
-                        <StudentSearchBar onSelectStudent={handleStudentSelect} />
-                    )}
-                </div>
-
-                <div className={style.studentDetail}>
-                    <h3>
-                        STUDENT RESIDENCY EVALUATION
-                        <span className={style.buttons}>
-                            {currentUser?.role === "admin" && (
-                                <>
-                                    <AddStudent onSubmit={addStudent} />
-                                    <EditStudent
-                                        onSubmit={editStudent}
-                                        student={selectedStudent}
-                                        isViewing={isViewing}
-                                    />
-                                </>
-                            )}
-                            <FaPrint
-                                style={{ cursor: "pointer" }}
-                                title="Print"
-                                onClick={() => window.print()}
-                            />
-                        </span>
-                    </h3>
-
-                    <div className={style.studentResidency}>
-                        <div className={style.lBlock}>
-                            <span>Student ID: {selectedStudent?.student_id}</span>
-                            <span>Student Name: {selectedStudent?.student_l_name}, {selectedStudent?.student_f_name}</span>
-                            <span>Program/Major: {selectedStudent?.program_id}</span>
-                            <span>Total Units Required for this Course: {selectedStudent?.total_units_required}</span>
-                        </div>
-                        <div className={style.rBlock}>
-                            <span>Year: {selectedStudent?.student_year}</span>
-                            <span>Status: {selectedStudent?.student_status}</span>
-                            <span>Total Units Taken: {selectedStudent?.units_taken}</span>
-                            <span>GWA: {selectedStudent?.gwa}</span>
-                        </div>
-                    </div>
-
-                    <CourseTable
-                        student_id={selectedStudent?.student_id}
-                        courses={courses}
-                        role={currentUser?.role} // still pass the *logged-in user’s role*
-                        onSelectStudent={handleStudentSelect}
-                    />
-                </div>
-            </div>
+      <div className={style.studentBody}>
+        <div className={style.studentSearchBarWrapper}>
+          {currentUser?.role === "admin" && (
+            <StudentSearchBar onSelectStudent={handleStudentSelect} />
+          )}
         </div>
-    );
+
+        <div className={style.studentDetail}>
+          <h3>
+            STUDENT RESIDENCY EVALUATION
+            <span className={style.buttons}>
+              {currentUser?.role === "admin" && (
+                <>
+                  <AddStudent onSubmit={addStudent} />
+                  <EditStudent
+                    onSubmit={editStudent}
+                    student={selectedStudent}
+                    isViewing={isViewing}
+                  />
+                </>
+              )}
+              <FaPrint
+                style={{ cursor: "pointer" }}
+                title="Print"
+                onClick={() => window.print()}
+              />
+            </span>
+          </h3>
+
+          {selectedStudent ? (
+            <>
+              <div className={style.studentResidency}>
+                <div className={style.lBlock}>
+                  <span>Student ID: {selectedStudent.student_id}</span>
+                  <span>
+                    Student Name: {selectedStudent.student_l_name},{" "}
+                    {selectedStudent.student_f_name}
+                  </span>
+                  <span>Program/Major: {selectedStudent.program_id}</span>
+                  <span>
+                    Total Units Required for this Course:{" "}
+                    {selectedStudent.total_units_required}
+                  </span>
+                </div>
+                <div className={style.rBlock}>
+                  <span>Year: {selectedStudent.student_year}</span>
+                  <span>Status: {selectedStudent.student_status}</span>
+                  <span>Total Units Taken: {selectedStudent.units_taken}</span>
+                  <span>GWA: {selectedStudent.gwa}</span>
+                </div>
+              </div>
+
+              <CourseTable
+                student_id={selectedStudent.student_id}
+                courses={courses}
+                role={currentUser.role}
+                onSelectStudent={handleStudentSelect}
+              />
+            </>
+          ) : (
+            <p style={{ marginTop: "2rem", fontStyle: "italic" }}>
+              Search for a student to display their checklist.
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
