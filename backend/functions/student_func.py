@@ -10,6 +10,41 @@ from schema.student_schema import Student
 from models.student_model import Student as Student_Model
 from models.user_model import User
 
+from db.firestore import fs
+
+#--------------------------Firestore Functions--------------------------
+def addStudent(student: Student):
+    student_collection = fs.collection("students")
+
+    student_id = student.id
+    delattr(student, "id")
+    student_collection.document(student_id).set(student.__dict__)
+
+def editStudent(student: Student, old_id: str):
+    student_collection = fs.collection("students")
+
+    new_id = student.id
+    delattr(student, "id")
+
+    student_collection .document(old_id).delete()
+    student_collection.document(new_id).set(student.__dict__)
+
+def deleteStudent(student_id: str):
+    fs.collection("students").document(student_id).delete()
+
+def getStudent(user: User, student_id: str = None):
+    if user.role == "student":
+        student_id = user.login_id
+    elif user.role == "admin":
+        if not student_id:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Admin must specify a student ID.")
+    else:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "User not authorized to access student data.")
+    
+    
+
+
+#--------------------------MySQL Functions--------------------------
 def addStudent(student: Student, db_session: Session):
     student_model = Student_Model(**student.model_dump())
 
@@ -22,6 +57,7 @@ def addStudent(student: Student, db_session: Session):
     except SQLAlchemyError:
         db_session.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Error occured adding student")
+
 
 def editStudent(student: Student, student_id: str, db_session: Session):
     student_model = student.model_dump()
@@ -42,6 +78,8 @@ def editStudent(student: Student, student_id: str, db_session: Session):
     except SQLAlchemyError:
         db_session.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Error occured editing student")
+    
+
 
 def deleteStudent(student_id: str, db_session: Session):
     try:
@@ -55,6 +93,7 @@ def deleteStudent(student_id: str, db_session: Session):
     except SQLAlchemyError:
         db_session.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Error occured deleting student")
+    
     
 def getStudent(user: User, db_session: Session, student_id: str = None):
     # Determine the student ID to fetch
