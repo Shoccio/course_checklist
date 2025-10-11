@@ -8,6 +8,44 @@ from functions.student_course_func import deleteCourses as DC
 from functions.program_course_func import updateOrder
 from fastapi import HTTPException, status
 
+from db.firestore import fs
+
+#--------------------------Firestore Functions--------------------------
+def addCourseFirestore(course: CourseSchema):
+    course_collection = fs.collection("courses")
+
+    course_dict = course.__dict__
+    course_id = course_dict["course_id"]
+    course_dict.pop("course_id")
+
+    course_collection.document(course_id).set(course_dict)
+
+def editCourseFirestore(course: CourseSchema, course_id: str):
+    course_collection = fs.collection("courses")
+
+    course_dict = course.__dict__
+    new_id = course_dict["course_id"]
+    course_dict.pop("course_id")
+
+    old_course = course_collection.document(course_id)
+
+    if not old_course.get().exists:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Course does not exist")
+    
+    old_course.delete()
+    course_collection.document(new_id).set(course_dict)
+
+def deleteCourseFirestore(course_id: str):
+    course_collection = fs.collection("courses")
+
+    course = course_collection.document(course_id)
+
+    if not course.get().exists:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Course does not exist")
+    
+    course.delete()
+#--------------------------MySQL Functions--------------------------
+
 def addCourse(course: CourseSchema, db_connection: Session):
     course_model = Course(**course.model_dump())
     

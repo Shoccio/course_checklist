@@ -1,2 +1,5 @@
 /backend/credentials
 /backend/data
+/courses.csv
+/backend/csv_to_firestore.py
+/backend/misc/extrac_database.py
