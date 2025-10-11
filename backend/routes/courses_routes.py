@@ -7,6 +7,24 @@ from sqlalchemy.orm import Session
 
 router = APIRouter()
 
+#--------------------------Firestore Functions--------------------------
+@router.post("/add-firestore")
+def addCourse(course: CourseSchema):
+    courses_func.addCourseFirestore(course)
+    return {"message": "Course add successful"}
+
+@router.put("/edit-firestore/{course_id}")
+def editCourse(course: CourseSchema, course_id: str):
+    courses_func.editCourseFirestore(course, course_id)
+    return {"message": "Course edited succesful"}
+
+@router.delete("/delete-firestore/{course_id}")
+def deleteCourse(course_id: str):
+    courses_func.deleteCourseFirestore(course_id)
+    return {"message": "Course deleted succesful"}
+
+#--------------------------MySQL Functions--------------------------
+
 @router.post("/add")
 def addCourse(course: CourseSchema, db_connection: Session = Depends(get_db), role: str = checkRole(["admin"])):
     courses_func.addCourse(course, db_connection)
