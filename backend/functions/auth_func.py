@@ -19,6 +19,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 120
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
+#--------------------------Firestore Functions--------------------------
 def login_firestore(user_id: str, passwd: str):
     user_collection = fs.collection("users")
 
@@ -41,6 +42,44 @@ def login_firestore(user_id: str, passwd: str):
         "role":         user["role"]
     }
 
+def getCurrentUser_firestore(request: Request):
+    user_collection = fs.collection("users")
+
+    token = request.cookies.get("access_token")
+
+    if token is None:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="No token found in cookies")
+
+    try:
+        jwt_decoded = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        login_id = jwt_decoded.get("sub")
+
+        if not login_id:
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
+        
+        user = user_collection.document(login_id).get()
+        
+        if not user.exists:
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="User not found")
+        
+        return user.to_dict()
+
+    except JWTError:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Failed to decode token")
+    
+def getCurrentUserRoleFirestore(user: User = Depends(getCurrentUser_firestore)):
+    return user["role"]
+
+def checkRoleFirestore(roles: list[str]):
+    def checker(role: str = Depends(getCurrentUserRoleFirestore)):
+        if role not in roles:
+            raise HTTPException(status.HTTP_403_FORBIDDEN, "User is not authorized to do current action")
+        
+        return role
+        
+    return Depends(checker)
+
+#--------------------------MySQL Functions--------------------------
 def login(db_connection: Session, user_id: str, passwd: str):
     try:
         user_pass = db_connection.query(User).filter(User.login_id == user_id).options(load_only(User.hashed_pass, User.role)).one()
