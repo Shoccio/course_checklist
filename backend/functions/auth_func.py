@@ -9,6 +9,8 @@ from jose import JWTError, jwt
 from datetime import timedelta
 import datetime
 
+from db.firestore import fs
+
 pwd_contx = CryptContext(schemes=['bcrypt'])
 
 SECRET_KEY = "your-secret-key"
@@ -17,7 +19,29 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 120
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-def login(user_id: str, passwd: str, db_connection: Session):
+def login_firestore(user_id: str, passwd: str):
+    user_collection = fs.collection("users")
+
+    user = user_collection.document(user_id).get()
+
+    if not user.exists:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
+    
+    user = user.to_dict()
+
+    if not pwd_contx.verify(passwd, user["hashed_pass"]):
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Wrong ID/Password")
+    
+    #token = createToken({"sub": user_id}, timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+
+    return {
+        #"access_token": token,
+        "token_type":   "bearer",
+        "student_id":   user_id,
+        "role":         user["role"]
+    }
+
+def login(db_connection: Session, user_id: str, passwd: str):
     try:
         user_pass = db_connection.query(User).filter(User.login_id == user_id).options(load_only(User.hashed_pass, User.role)).one()
 
