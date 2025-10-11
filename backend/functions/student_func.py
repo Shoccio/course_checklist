@@ -41,8 +41,6 @@ def getStudent(user: User, student_id: str = None):
     else:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "User not authorized to access student data.")
     
-    
-
 
 #--------------------------MySQL Functions--------------------------
 def addStudent(student: Student, db_session: Session):
