@@ -1,15 +1,11 @@
-from sqlalchemy.orm import Session, load_only
-from sqlalchemy.exc import SQLAlchemyError
 from passlib.context import CryptContext
-from models import user_model as us_m
 from fastapi import HTTPException, status
 
 from db.firestore import fs
 
 pwd_contx = CryptContext(schemes=['bcrypt'])
 
-#--------------------------Firestore Functions--------------------------
-def addUserFirestore(loginID: str, password: str):
+def addUser(loginID: str, password: str):
     user_collection = fs.collection("users")
 
     hash_pass = pwd_contx.hash(password)
@@ -17,7 +13,7 @@ def addUserFirestore(loginID: str, password: str):
 
 
 '''
-def editLoginIDFirestore(loginID: str, oldID: str):
+def editLoginID(loginID: str, oldID: str):
     user_collection = fs.collection("users")
 
     user = fs.document(oldID)
@@ -29,7 +25,7 @@ def editLoginIDFirestore(loginID: str, oldID: str):
 
     user.delete()
 '''
-def editPassFirestore(loginID: str, new_pass: str):
+def editPass(loginID: str, new_pass: str):
     user_collection = fs.collection("users")
 
     hash_pass = pwd_contx.hash(new_pass)
@@ -41,7 +37,7 @@ def editPassFirestore(loginID: str, new_pass: str):
 
     user.update({"hashed_pass": hash_pass})
 
-def deleteUserFirestore(loginID: str):
+def deleteUser(loginID: str):
     user_collection = fs.collection("users")
 
     user = user_collection.document(loginID)
