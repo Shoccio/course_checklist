@@ -1,80 +1,102 @@
 # functions/student_course_func.py
-from sqlalchemy.orm import Session
-from sqlalchemy import and_
-from functions.course_utils import getCourse
-from models.student_course_model import Student_Course as SC
-from models.program_course_model import Program_Courses as PC
-from models.course_model import Course
-from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException, status
+from db.firestore import fs
+from math import ceil
 
+def addEntry(student_id: str, program_id: str):
+    courses_collection = fs.collection("program_course")
+    SC_collection = fs.collection("student_courses")
 
-def addEntry(student_id: str, program_id:str, db_connection: Session):
-    try:
-        courses = getCourse(student_id, program_id, db_connection)
-        courses = [dict(row._mapping) for row in courses]
-        student_courses = [SC(**course) for course in courses]
+    courses = courses_collection.where("program_id", "==", program_id).stream()
 
-        db_connection.add_all(student_courses)
-    except SQLAlchemyError:
-        db_connection.rollback()
-        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Error occured adding corresponding courses")
+    student_course = [
+        {
+            "student_id": student_id,
+            "course_id": course.to_dict()["course_id"],
+            "grade": None,
+            "remark": ""
+        }
+        for course in courses
+    ]
+
+    chunk_size = 500
+
+    for chunk in range(ceil(len(student_course) / chunk_size)):
+        batch = fs.batch()
+
+        for i in student_course[chunk * chunk_size : (chunk + 1) * chunk_size]:
+            doc_ref = SC_collection.document()
+            batch.set(doc_ref, i)
+
+        batch.commit()
+
+def deleteCourses(course_id: str):
+    SC_collection = fs.collection("student_courses")
+
+    courses = list(SC_collection.where("course_id", "==", course_id).stream())
+
+    if len(courses) == 0:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Course not found")
     
-def editStudentCourses(new_id: str, old_id:str, db_connection: Session):
-    try:
-        db_connection.query(SC).filter_by(student_id = old_id).update({SC.student_id: new_id}, synchronize_session=False)
-    except SQLAlchemyError:
-        db_connection.rollback()
-        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Error occured editing student courses")
-    
-def deleteCourses(course_id: str, db_connection: Session):
-    try:
-        course = db_connection.query(SC).filter_by(course_id = course_id).first()
+    chunk_size = 500
 
-        if not course:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, "Course not found")
-        db_connection.delete(course)
-    except SQLAlchemyError:
-        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Error occured deleting course")
-    
-def deleteStudent(student_id: str, db_connection: Session):
-    try:
-        db_connection.query(SC).filter_by(student_id = student_id).delete(synchronize_session=False)
-    except:
-        db_connection.rollback()
-        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Error occured deleting student")
-    
-def getStudentCourses(student_id: str, program_id: str, db: Session):
-    results = (
-        db.query(
-            Course.course_name,
-            Course.course_units,
-            Course.course_year,
-            Course.course_sem,
-            SC.grade,
-            SC.remarks,
-            Course.course_id,
-        )
-        .join(Course, Course.course_id == SC.course_id)
-        .join(PC, and_(PC.course_id == Course.course_id, PC.program_id == program_id))
-        .filter(SC.student_id == student_id)
-        .order_by(PC.sequence.asc())
-        .all()
-    )
+    for chunk in range(ceil(len(courses) / chunk_size)):
+        batch = fs.batch()
 
-    course_data = []
-    for name, units, year, sem, grade, remarks, code in results:
-        course_data.append({
-            "course_id": code,
-            "course_name": name,
-            "course_units": units,
-            "year": year,
-            "semester": sem,
-            "grade": grade,
-            "remark": remarks or "N/A"
-        })
+        for course in courses[chunk * chunk_size : (chunk + 1) * chunk_size]:
+            batch.delete(course.reference)
 
-    return course_data
+        batch.commit()
+
+def deleteStudent(student_id: str):
+    SC_collection = fs.collection("student_courses")
+
+    student_courses = list(SC_collection.where("student_id", "==", student_id))
+
+    if len(student_courses) == 0:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Student not found")
+    
+    chunk_size = 500
+
+    for chunk in range(ceil(len(student_courses) / 4)):
+        batch = fs.batch()
+
+        for course in student_courses[chunk * chunk_size : (chunk + 1) * chunk_size]:
+            batch.delete(course)
+
+        batch.commit()
+    
+def getStudentCourses(student_id: str, program_id: str):
+    SC_collection = fs.collection("student_courses")
+
+    student_courses = list(SC_collection.where("student_id", "==", student_id).stream())
+
+    if len(student_courses) == 0:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Student not found")
+    
+    courses = []
+
+    for course in student_courses:
+        student_course_dict = course.to_dict()
+
+        program_course_ref = student_course_dict["reference"]
+        program_course_doc = program_course_ref.get()
+        program_course_dict = program_course_doc.to_dict()
+
+        course_ref = program_course_dict["reference"]
+        course_doc = course_ref.get()
+        course_dict = course_doc.to_dict()
+
+        courses.append({ "course_id": student_course_dict["course_id"],
+                        "course_name": course_dict["course_name"],
+                        "course_units": course_dict["course_units"],
+                        "year": course_dict["course_year"],
+                        "semester": course_dict["course_sem"],
+                        "grade": student_course_dict["grade"],
+                        "remark": student_course_dict["remark"] or "N/A"
+                        })
+        
+        return courses
 
 def getGWA(courses):
     total_weighted = 0
@@ -94,16 +116,17 @@ def getGWA(courses):
 
     return round(total_weighted / total_units, 4)  # Rounded to 4 decimal places
 
-def updateGrades(course_id: str, grade: float, remark: str, db_connection: Session):
+def updateGrades(course_id: str, student_id, grade: float):
     if grade == -1.0:
         grade = None
-    try:
-        (db_connection.query(SC).filter_by(course_id = course_id)
-         .update({SC.grade: grade, SC.remarks: remark}, synchronize_session=False))
-        db_connection.commit()
 
-        return {"message": "Edit grade successful"}
-    except SQLAlchemyError:
-        db_connection.rollback()
-        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Error updating grades")
+    student_course_collection = fs.collection("student_courses")
+
+    course = list(student_course_collection.where("course_id", "==", course_id).where("student_id", "==", student_id).stream())
+
+    if len(course) == 0:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Student/Course not found")
+    
+    course[0].update({"grade": grade})
+
     
