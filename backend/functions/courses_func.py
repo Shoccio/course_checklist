@@ -1,17 +1,11 @@
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import select
 from schema.course_schema import CourseSchema 
-from models.course_model import Course
-from models.program_course_model import Program_Courses as PC
-from functions.student_course_func import deleteCourses as DC
 from functions.program_course_func import updateOrder
 from fastapi import HTTPException, status
 
 from db.firestore import fs
 
 #--------------------------Firestore Functions--------------------------
-def addCourseFirestore(course: CourseSchema):
+def addCourse(course: CourseSchema):
     course_collection = fs.collection("courses")
 
     course_dict = course.__dict__
@@ -20,7 +14,7 @@ def addCourseFirestore(course: CourseSchema):
 
     course_collection.document(course_id).set(course_dict)
 
-def editCourseFirestore(course: CourseSchema, course_id: str):
+def editCourse(course: CourseSchema, course_id: str):
     course_collection = fs.collection("courses")
 
     course_dict = course.__dict__
@@ -35,7 +29,7 @@ def editCourseFirestore(course: CourseSchema, course_id: str):
     old_course.delete()
     course_collection.document(new_id).set(course_dict)
 
-def deleteCourseFirestore(course_id: str):
+def deleteCourse(course_id: str):
     course_collection = fs.collection("courses")
 
     course = course_collection.document(course_id)
@@ -44,114 +38,39 @@ def deleteCourseFirestore(course_id: str):
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Course does not exist")
     
     course.delete()
-#--------------------------MySQL Functions--------------------------
 
-def addCourse(course: CourseSchema, db_connection: Session):
-    course_model = Course(**course.model_dump())
-    
-    db_connection.add(course_model)
-    db_connection.commit()
+def updateCourses(program_id: str, courses: list[CourseSchema]):
+    program_courses_collection = fs.collection("program_course")
+    courses_collection = fs.collection("courses")
 
-    return {"message": "Course added successfully"}
+    courses_ids = [course.course_id for course in courses]
+    new_courses = []
 
-def editCourse(course: CourseSchema, course_id: str, db_connection: Session):
-    course_model = course.model_dump()
-    try:
-        old_course = db_connection.query(Course).filter_by(course_id = course_id).first()
-
-        if not old_course:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, "Course does not exist")
-        
-        for key, value in course_model.items():
-            setattr(old_course, key, value)
-
-        db_connection.commit()
-    except SQLAlchemyError:
-        db_connection.rollback()
-        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "An error occured while editing a course")
-
-    return {"message": "Course edited successfully"}
+    courses_docs = list(program_courses_collection.where("program_id", "==", program_id).stream())
+    courses_map = {course.to_dict()["course_id"]: course.reference for course in courses_docs}
 
 
-def deleteCourse(course_id: str, db_connection: Session):
-    try:
-        course = db_connection.query(Course).filter_by(course_id = course_id).first()
-        
-        if not course:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, "Course does not exist")
-        DC(course_id, db_connection)
-        
-        db_connection.delete(course)
-        db_connection.commit()
-    except SQLAlchemyError:
-        db_connection.rollback()
-        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "An error occured while deleting a course")
+    batch = fs.batch()
+    chunk_size = 500
 
-    return {"message": "Course deleted successfully"}
+    for index, course_data in enumerate(courses):
+        if not course_data.id in courses_map:
+            course_ref = courses_collection.document()
+            prog_course_ref = program_courses_collection.document()
 
-def getCoursebyProgram(program_id: str, db_connection: Session):
-    query = (
-        select(
-            Course.course_id,
-            Course.course_name,
-            Course.course_hours,
-            Course.course_units,
-            Course.course_preq,
-            Course.course_year,
-            Course.course_sem,
-            Course.units_lec,
-            Course.units_lab,
-            Course.hours_lec,
-            Course.hours_lab,
-            PC.sequence
-        )
-        .join(PC, Course.course_id == PC.course_id)
-        .where(PC.program_id == program_id)
-        .order_by(Course.course_year.asc(), Course.course_sem.asc(), PC.sequence.asc())
-    )
-    result = db_connection.execute(query).mappings().all()
-    return result
+            batch.set(prog_course_ref, {"program_id": program_id, "course_id": course_data.id, "sequence": index})
+            batch.set(course_ref, course_data.model_dump())
+            new_courses.append({course_data.id: course_ref})
+        else:
+            course_ref = courses_map[course_data.id].get().to_dict()["reference"]
+            batch.set(course_ref, course_data.model_dump(), merge = True)
 
-def updateCourses(program_id: str, courses: list[CourseSchema], db_connection: Session):
-    try:
-        updated_ids = []
-        course_ids = [course.course_id for course in courses]
+        if (index + 1) % chunk_size == 0:
+            batch.commit()
+            batch = fs.batch()
 
-        updateOrder(program_id, course_ids, db_connection)
+    batch.commit()
 
-        for course_data in courses:
-            db_course = db_connection.query(Course).filter(Course.course_id == course_data.course_id).first()
-            if not db_course:
-                db_course = Course(
-                    course_id=course_data.course_id,
-                    course_name=course_data.course_name,
-                    course_hours=course_data.course_hours,
-                    course_units=course_data.course_units,
-                    course_preq=course_data.course_preq,
-                    course_year=course_data.course_year,
-                    course_sem=course_data.course_sem,
-                    units_lec=course_data.units_lec,
-                    units_lab=course_data.units_lab,
-                    hours_lec=course_data.hours_lec,
-                    hours_lab=course_data.hours_lab,
-                )
-                db_connection.add(db_course)
-                
-            db_course.course_name = course_data.course_name
-            db_course.course_hours = course_data.course_hours
-            db_course.course_units = course_data.course_units
-            db_course.course_preq = course_data.course_preq
-            db_course.course_year = course_data.course_year
-            db_course.course_sem = course_data.course_sem
-            db_course.units_lec = course_data.units_lec
-            db_course.units_lab = course_data.units_lab
-            db_course.hours_lec = course_data.hours_lec
-            db_course.hours_lab = course_data.hours_lab
+    updateOrder(program_id, courses_ids)
+    addCourseStudent(course_ids)
 
-            updated_ids.append(course_data.course_id)
-
-        db_connection.commit()
-        return {"updated": updated_ids}
-    except SQLAlchemyError:
-        db_connection.rollback()
-        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "An error occured while updating courses")

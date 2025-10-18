@@ -30,6 +30,31 @@ def addEntry(student_id: str, program_id: str):
 
         batch.commit()
 
+def addCourseStudent(course_ids: list[str]):
+    student_course_collection = fs.collection("student_courses")
+    student_collection = fs.collection("students")
+
+    students_docs = student_collection.stream()
+    students_ids = [student.id for student in students_docs]
+
+    batch = fs.batch()
+    chunk_size = 500
+    index = 0
+
+    for student_id in students_ids:
+
+        for course_id in course_ids:
+            doc_ref = student_course_collection.document()
+            batch.set(doc_ref, {"student_id": student_id, "course_id": course_id, "grade": 0, "remark": None})
+            index += 1
+
+            if index % chunk_size == 0:
+                batch.commit()
+                batch = fs.batch()
+
+    batch.commit()
+
+
 def deleteCourses(course_id: str):
     SC_collection = fs.collection("student_courses")
 
@@ -51,7 +76,7 @@ def deleteCourses(course_id: str):
 def deleteStudent(student_id: str):
     SC_collection = fs.collection("student_courses")
 
-    student_courses = list(SC_collection.where("student_id", "==", student_id))
+    student_courses = list(SC_collection.where("student_id", "==", student_id).stream())
 
     if len(student_courses) == 0:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Student not found")
@@ -62,7 +87,7 @@ def deleteStudent(student_id: str):
         batch = fs.batch()
 
         for course in student_courses[chunk * chunk_size : (chunk + 1) * chunk_size]:
-            batch.delete(course)
+            batch.delete(course.reference)
 
         batch.commit()
     
@@ -127,6 +152,7 @@ def updateGrades(course_id: str, student_id, grade: float):
     if len(course) == 0:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Student/Course not found")
     
-    course[0].update({"grade": grade})
+    course[0].reference.update({"grade": grade})
+
 
     

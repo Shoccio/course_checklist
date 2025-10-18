@@ -1,12 +1,6 @@
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
-from fastapi import HTTPException, status
-from models.program_course_model import Program_Courses
-
 from db.firestore import fs
 
-#--------------------------Firestore Functions--------------------------
-def getCourseByProgramFirestore(program_id: str):
+def getCourseByProgram(program_id: str):
     program_courses_collection = fs.collection("program_course")
 
     courses = program_courses_collection.document(program_id).collection("courses").stream()
@@ -15,16 +9,25 @@ def getCourseByProgramFirestore(program_id: str):
 
     return courses_dict
 
-#--------------------------MySQL Functions--------------------------
+def updateOrder(program_id: str, course_ids: list[str]):
+    program_courses_collection = fs.collection("program_course")
 
-def updateOrder(program_id: str, course_ids: list[str], db_connection: Session):
-    try:
-        for index, course_id in enumerate(course_ids):
-            (db_connection.query(Program_Courses).
-             filter_by(program_id = program_id, course_id = course_id).
-             update({"sequence": index})
-            )
+    courses = list(program_courses_collection.where("program_id", "==", program_id).stream())
 
-    except SQLAlchemyError:
-        db_connection.rollback()
-        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Error occured updating order")
+    course_map = {doc.to_dict["course_id"]: doc.reference for doc in courses}
+
+    batch = fs.batch()
+    chunk_size = 500
+
+    for index, course_id in enumerate(course_ids):
+        if course_id in course_map:
+            batch.update(course_map[course_id], {"sequence": index})
+        else:
+            reference = program_courses_collection.document()
+
+        if (index + 1) % chunk_size == 0:
+            batch.commit()
+            batch = fs.batch()
+
+    batch.commit()
+

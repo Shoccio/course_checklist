@@ -11,28 +11,9 @@ from sqlalchemy.orm import Session
 router = APIRouter()
 
 #--------------------------Firestore Functions--------------------------
-@router.post("/login-firestore")
+@router.post("/login")
 def logginIn(user: OAuth2PasswordRequestForm = Depends()):
     auth = auth_func.login_firestore(user.username, user.password)
-
-    token = auth["access_token"]
-
-    response = JSONResponse(content={"message": "Login successful"})
-    response.set_cookie(
-        key="access_token",
-        value=token,  # ✅ Just the JWT string
-        httponly=True,
-        secure=True,
-        samesite="none",  # set True in production if on HTTPS
-        path="/"
-    )
-
-    return response
-
-#--------------------------MySQL Functions--------------------------
-@router.post("/login")
-def logginIn(user: OAuth2PasswordRequestForm = Depends(), db_connection: Session = Depends(get_db)):
-    auth = auth_func.login(db_connection, user.username, user.password)  # returns a dict
 
     token = auth["access_token"]
 
@@ -54,11 +35,11 @@ def logOut(response: Response):
     response.delete_cookie("access_token", path="/")
     return response
 
-@router.post("/editPassword/{student_id}")
-def editPassword(student_id: str, newPass: RequestedPass, 
-                 db_connection: Session = Depends(get_db), curUser: User = Depends(auth_func.getCurrentUser)):
-    if curUser.login_id != student_id and curUser.role.value == "admin":
-        return {"Error: Invalid User"}
+@router.post("editPassword/{student_id}")
+def editPassword(student_id: str, newPass: RequestedPass''', curUser: User = Depends(auth_func.getCurrentUser)'''):
+    '''if curUser.login_id != student_id and curUser.role.value == "admin":
+            return {"Error: Invalid User"} '''
     
-    return user_func.editPass(student_id, newPass.newPass, db_connection)
+    return user_func.editPass(student_id, newPass.newPass)
+
 

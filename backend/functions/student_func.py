@@ -1,13 +1,7 @@
-from sqlalchemy import or_
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
-from functions import user_func
-from functions import student_course_func as sc_func
 from functions.student_course_func import getStudentCourses, getGWA, deleteCourses as DS
 from schema.student_schema import Student
-from models.student_model import Student as Student_Model
 from models.user_model import User
 
 from db.firestore import fs
@@ -20,9 +14,6 @@ def initializeStudentList():
 
     students_list = [student.to_dict() for student in student_collection]
 
-
-
-#--------------------------Firestore Functions--------------------------
 def addStudent(student: Student):
     student_collection = fs.collection("students")
 
@@ -83,7 +74,7 @@ def search_students(query: str):
     for student in students_list:
         full_name = " ".join(student["l_name"], student["f_name"], student["m_name"])
 
-        if not query in full_name or query in student["id"]:
+        if not query in full_name or not query in student["id"]:
             continue
 
         valid_students.append()
