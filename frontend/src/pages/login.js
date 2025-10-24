@@ -3,10 +3,12 @@ import logo from "../imgs/uphsllogo.png";
 import { useNavigate } from "react-router-dom";
 import style from "./../style/login.module.css";
 
-export default function Login({checkCredential, error}) {
+export default function Login({checkCredential}) {
     const navigate = useNavigate();
     const [login_id, setLoginID] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+
 
     const handleSubmit = async (e) => {
         try{
@@ -16,7 +18,8 @@ export default function Login({checkCredential, error}) {
                 navigate("/checklist");
         }
         catch (err){
-            console.error('Login failed: ', error.response?.data || error.message);
+            console.error('Login failed: ', err.response?.data || err.message);
+            setError("Invalid login credentials")
         }
         
     };
@@ -32,6 +35,7 @@ export default function Login({checkCredential, error}) {
                         <h1>SIGN IN</h1> <br />
                         <form onSubmit={handleSubmit}>
                             <input
+                                required
                                 className={style.logForm}
                                 type="text"
                                 id="login_id"
@@ -41,6 +45,7 @@ export default function Login({checkCredential, error}) {
                                 onChange={(e) => setLoginID(e.target.value)}
                             /> <br />
                             <input
+                                required
                                 className={style.logForm}
                                 type="password"
                                 id="password"
@@ -52,7 +57,7 @@ export default function Login({checkCredential, error}) {
 
                             {/* Show error below password input */}
                             {error && (
-                                <div style={{ color: 'red', marginTop: '10px' }}>
+                                <div style={{ color: 'red', marginTop: '10px', marginBottom: '-10px' }}>
                                     {error}
                                 </div>
                             )}

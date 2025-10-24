@@ -9,7 +9,6 @@ import axios from "axios";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null); // 👈 logged-in admin
-  const [error, setError] = useState('');
 
   const checkCredential = async (username, password) => {
     const response = await axios.post(
@@ -27,7 +26,6 @@ function App() {
     );
 
     console.log(response.data);
-    setError(""); // Clear any previous errors
 
     axios
     .get("http://127.0.0.1:8000/student/get/details", { withCredentials: true })
@@ -36,8 +34,6 @@ function App() {
     })
     .catch((err) => {
         console.error("Failed to fetch student data: ", err);
-        setError("Invalid login credentials. Please try again.");
-
     });
     
     return response.status === 200;
@@ -46,7 +42,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login checkCredential={checkCredential} setCurrentUser={setCurrentUser} error={error}/>} />
+        <Route path="/" element={<Login checkCredential={checkCredential} setCurrentUser={setCurrentUser}/>} />
         <Route path="/checklist" element={<Checklist currentUser={currentUser} setCurrentUser={setCurrentUser}/>} />
         <Route path="/program-checklist" element={<ProgramCourseList />} />
       </Routes>
