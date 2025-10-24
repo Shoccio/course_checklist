@@ -1,19 +1,15 @@
 from functions import auth_func
 from functions import user_func
-from db.db import get_db
-from models.user_model import User
 from schema.user_schema import RequestedPass
 from fastapi import APIRouter, Depends, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
 
 router = APIRouter()
 
-#--------------------------Firestore Functions--------------------------
 @router.post("/login")
 def logginIn(user: OAuth2PasswordRequestForm = Depends()):
-    auth = auth_func.login_firestore(user.username, user.password)
+    auth = auth_func.login(user.username, user.password)
 
     token = auth["access_token"]
 
@@ -36,7 +32,7 @@ def logOut(response: Response):
     return response
 
 @router.post("editPassword/{student_id}")
-def editPassword(student_id: str, newPass: RequestedPass''', curUser: User = Depends(auth_func.getCurrentUser)'''):
+def editPassword(student_id: str, newPass: RequestedPass):
     '''if curUser.login_id != student_id and curUser.role.value == "admin":
             return {"Error: Invalid User"} '''
     
