@@ -3,3 +3,14 @@
 /courses.csv
 /backend/csv_to_firestore.py
 /backend/misc/extrac_database.py
+/program_courses.csv
+/misc
+
+/backend/schema/__pycache__
+/backend/routes/__pycache__
+/backend/functions/__pycache__
+/backend/routes/__pycache__
+/backend/db/__pycache__
+/backend/__pycache__
+
+/backend/db/db.py
