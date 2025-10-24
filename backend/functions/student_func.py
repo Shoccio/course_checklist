@@ -2,8 +2,7 @@ from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
 from functions.student_course_func import getStudentCourses, getGWA, deleteCourses as DS
 from schema.student_schema import Student
-from models.user_model import User
-
+from schema.user_schema import User
 from db.firestore import fs
 
 students_list = []

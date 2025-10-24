@@ -1,5 +1,6 @@
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status, Cookie, Request
+from schema.user_schema import User
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from datetime import timedelta
@@ -16,6 +17,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 120
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 def login(user_id: str, passwd: str):
+    
     user_collection = fs.collection("users")
 
     user = user_collection.document(user_id).get()
@@ -26,7 +28,7 @@ def login(user_id: str, passwd: str):
     user = user.to_dict()
 
     if not pwd_contx.verify(passwd, user["hashed_pass"]):
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Wrong ID/Password")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "ID/Password is wrong")
     
     #token = createToken({"sub": user_id}, timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
 
