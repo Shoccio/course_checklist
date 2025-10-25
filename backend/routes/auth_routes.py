@@ -1,11 +1,16 @@
 from functions import auth_func
 from functions import user_func
-from schema.user_schema import RequestedPass
+from schema.user_schema import RequestedPass, User
 from fastapi import APIRouter, Depends, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 
 router = APIRouter()
+
+@router.post("/add-admin")
+def addAdmin(user: User):
+    return user_func.addUser(user.login_id, "12345", "admin")
+
 
 @router.post("/login")
 def logginIn(user: OAuth2PasswordRequestForm = Depends()):
