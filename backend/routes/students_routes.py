@@ -3,13 +3,14 @@ from schema.student_schema import Student
 from schema.user_schema import User
 from functions import student_func
 from functions.auth_func import getCurrentUser, checkRole
+from services.student_services import addStudentHelper
 
 
 router = APIRouter()
 
 @router.post("/add")
 def addStudent(student: Student):
-    return student_func.addStudent(student)
+    return addStudentHelper(student)
 
 @router.put("/edit/{student_id}")
 def editStudent(student: Student):
