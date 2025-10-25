@@ -9,5 +9,5 @@ class Student(BaseModel):
     l_name:         str
     m_name:         str | None
     year:           int
-    is_regular:     bool
+    status:         str
 
