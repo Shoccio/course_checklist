@@ -16,9 +16,10 @@ def initializeStudentList():
 def addStudent(student: Student):
     student_collection = fs.collection("students")
 
-    student_id = student.id
-    delattr(student, "id")
-    student_collection.document(student_id).set(student.__dict__)
+    student_info = student.model_dump()
+
+    del student_info["id"]
+    student_collection.document(student.id).set(student_info)
 
 def editStudent(student: Student):
     student_collection = fs.collection("students")

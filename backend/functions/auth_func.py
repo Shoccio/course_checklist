@@ -30,10 +30,10 @@ def login(user_id: str, passwd: str):
     if not pwd_contx.verify(passwd, user["hashed_pass"]):
         raise HTTPException(status.HTTP_404_NOT_FOUND, "ID/Password is wrong")
     
-    #token = createToken({"sub": user_id}, timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    token = createToken({"sub": user_id}, timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
 
     return {
-        #"access_token": token,
+        "access_token": token,
         "token_type":   "bearer",
         "student_id":   user_id,
         "role":         user["role"]
