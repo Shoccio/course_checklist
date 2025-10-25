@@ -12,8 +12,8 @@ def addStudent(student: Student):
     return student_func.addStudent(student)
 
 @router.put("/edit/{student_id}")
-def editStudent(student: Student, student_id: str):
-    return student_func.editStudent(student, student_id)
+def editStudent(student: Student):
+    return student_func.editStudent(student)
 
 @router.delete("/delete/{student_id}")
 def deleteStudent(student_id: str):

@@ -20,14 +20,10 @@ def addStudent(student: Student):
     delattr(student, "id")
     student_collection.document(student_id).set(student.__dict__)
 
-def editStudent(student: Student, old_id: str):
+def editStudent(student: Student):
     student_collection = fs.collection("students")
 
-    new_id = student.id
-    delattr(student, "id")
-
-    student_collection .document(old_id).delete()
-    student_collection.document(new_id).set(student.__dict__)
+    student_collection.document(student.id).set(student.__dict__)
 
 def deleteStudent(student_id: str):
     student = fs.collection("students").document(student_id)
