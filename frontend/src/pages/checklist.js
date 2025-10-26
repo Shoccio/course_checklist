@@ -8,11 +8,13 @@ import EditStudent from "../component/editStudent";
 import HeaderWebsite from "../component/header";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useUser } from "../App";
 
-export default function Checklist({currentUser, setCurrentUser}) {
+export default function Checklist() {
     const pageName = "CURRICULUM CHECKLIST";
     const navigate = useNavigate();
 
+    const [currentUser, setCurrentUser] = useUser();
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [courses, setCourses] = useState([]);
     const [isViewing, setIsViewing] = useState(false);

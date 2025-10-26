@@ -5,9 +5,11 @@ import style from "../style/button.module.css"
 import { FaPen, FaPlus } from "react-icons/fa";
 import { createPortal } from "react-dom";
 
+import { useGetProgram } from "../App";
+
 export default function EditStudent({ onSubmit, student, isViewing }) {
     let title = "Edit Student"
-    const [programs, setPrograms] = useState([]);
+    const programs = useGetProgram();
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({
     student_id: "",
@@ -21,6 +23,7 @@ export default function EditStudent({ onSubmit, student, isViewing }) {
     student_status: "",
     });
 
+    const getProgram = useGetProgram()
     const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -44,21 +47,6 @@ export default function EditStudent({ onSubmit, student, isViewing }) {
     });
     };
 
-    useEffect(() => {
-    const getProgram = async () => {
-        try {
-        const progrms = await axios.get("http://127.0.0.1:8000/program/get");
-
-        setPrograms(progrms.data);
-        }
-        catch (err){
-        console.error("Getting programs failed: ", err);
-        }
-    };
-
-    getProgram();
-
-    }, []);
 
     useEffect(() => {
     if(showModal){

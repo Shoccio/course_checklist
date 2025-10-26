@@ -6,6 +6,8 @@ import ProgramTable from "../component/program_table";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import { useGetProgram } from "../App";
+
 export default function ProgramCourseList({ currentUser }) {
   const pageName = "PROGRAM COURSELIST";
   const navigate = useNavigate();
@@ -18,23 +20,10 @@ export default function ProgramCourseList({ currentUser }) {
   const [editingRowId, setEditingRowId] = useState(null);
 
   const printRef = useRef();
+  const getProgram = useGetProgram()
 
   useEffect(() => {
-    const getProgram = async () => {
-      try {
-        const progrms = await axios.get("http://127.0.0.1:8000/program/get");
-
-        const programsMap = {};
-        progrms.data.forEach((p) => {
-          programsMap[p.program_id] = p;
-        });
-        setPrograms(programsMap);
-
-      } catch (err) {
-        console.error("Getting programs failed: ", err);
-      }
-    };
-    getProgram();
+    setPrograms(getProgram());
   }, []);
 
   const signOut = async () => {
