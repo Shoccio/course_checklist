@@ -35,9 +35,9 @@ def deleteStudent(student_id: str):
     student.delete()
 
 def getStudent(user: User, student_id: str = None):
-    if user.role == "student":
-        student_id = user.login_id
-    elif user.role == "admin":
+    if user["role"] == "student":
+        student_id = user["login_id"]
+    elif user["role"] == "admin":
         if not student_id:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Admin must specify a student ID.")
     else:
@@ -46,22 +46,24 @@ def getStudent(user: User, student_id: str = None):
     student_collection = fs.collection("students")
     
     student_doc = student_collection.document(student_id)
+    student = student_doc.get()
 
-    if not student_doc.get().exists:
+    if not student.exists:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Student not found")
     
-    student_data = student_doc.get().to_dict()
+    student_data = student.to_dict()
 
-    courses = getStudentCourses(student_data["id"], student_data["program_id"])
+    courses = getStudentCourses(student_doc.id, student_data["program_id"])
 
     total_units = sum(course["course_units"] for course in courses)
     units_taken = sum(course["course_units"] for course in courses if course["remark"] == "Passed")
     gwa = getGWA(courses)
 
+    student_data["id"] = student.id
     student_data["gwa"] = gwa
     student_data["units_taken"] = units_taken
     student_data["total_units_required"] = total_units
-    student_data["role"] = user.role.value
+    student_data["role"] = user["role"]
 
     return JSONResponse(content={"student": student_data, "courses": courses})
 

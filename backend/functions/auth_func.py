@@ -59,7 +59,10 @@ def getCurrentUser(request: Request):
         if not user.exists:
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="User not found")
         
-        return user.to_dict()
+        user_dict = user.to_dict()
+        user_dict["login_id"] = login_id
+        
+        return user_dict
 
     except JWTError:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Failed to decode token")

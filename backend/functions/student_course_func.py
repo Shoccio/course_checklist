@@ -4,17 +4,18 @@ from db.firestore import fs
 from math import ceil
 
 def addEntry(student_id: str, program_id: str):
-    courses_collection = fs.collection("program_course")
+    PC_collection = fs.collection("program_course")
     SC_collection = fs.collection("student_courses")
 
-    courses = courses_collection.where("program_id", "==", program_id).stream()
+    courses = PC_collection.where("program_id", "==", program_id).stream()
 
     student_course = [
         {
             "student_id": student_id,
             "course_id": course.to_dict()["course_id"],
             "grade": None,
-            "remark": ""
+            "remark": "",
+            "reference": course.reference
         }
         for course in courses
     ]
@@ -104,24 +105,16 @@ def getStudentCourses(student_id: str, program_id: str):
     for course in student_courses:
         student_course_dict = course.to_dict()
 
-        program_course_ref = student_course_dict["reference"]
-        program_course_doc = program_course_ref.get()
-        program_course_dict = program_course_doc.to_dict()
-
-        course_ref = program_course_dict["reference"]
-        course_doc = course_ref.get()
-        course_dict = course_doc.to_dict()
-
         courses.append({ "course_id": student_course_dict["course_id"],
-                        "course_name": course_dict["course_name"],
-                        "course_units": course_dict["course_units"],
-                        "year": course_dict["course_year"],
-                        "semester": course_dict["course_sem"],
+                        "course_name": student_course_dict["course_name"],
+                        "course_units": student_course_dict["course_units"],
+                        "year": student_course_dict["course_year"],
+                        "semester": student_course_dict["course_sem"],
                         "grade": student_course_dict["grade"],
                         "remark": student_course_dict["remark"] or "N/A"
                         })
         
-        return courses
+    return courses
 
 def getGWA(courses):
     total_weighted = 0
