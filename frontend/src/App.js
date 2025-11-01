@@ -17,7 +17,7 @@ function App() {
   const [courses, setCourses] = useState([]);
   const [programs, setPrograms] = useState(null);
 
-  const fetchStudentData = async (user) => {
+  /*const fetchStudentData = async (user) => {
       const params = new URLSearchParams({
           student_id: user?.id,
           program_id: user?.program_id
@@ -33,7 +33,7 @@ function App() {
       } catch (err) {
           console.error("Failed to fetch student data: ", err);
       }
-  };
+  };*/
 
   const programGet = async () => {
     try {
@@ -84,8 +84,8 @@ function App() {
 
     const student = await fetchCurrentStudent();
     setCurrentUser(student);
-    if(currentUser?.role === "student")
-      setCourses(fetchStudentData(currentUser));
+    //if(currentUser?.role === "student")
+    //  setCourses(fetchStudentData(currentUser));
     
     return response.status === 200;
 
@@ -94,7 +94,7 @@ function App() {
     <ProgramFunc.Provider value={programs}>
       <UserContext.Provider value={[currentUser, setCurrentUser]}>
         <CoursesContext.Provider value={[courses, setCourses]}>
-          <fetchStudentInfo.Provider value={fetchStudentData}>
+          <fetchStudentInfo.Provider value={fetchCurrentStudent}>
             <Router>
               <Routes>
                 <Route path="/" element={<Login checkCredential={checkCredential}/>} />

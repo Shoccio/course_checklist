@@ -68,6 +68,17 @@ export default function Checklist() {
         }
     };
 
+    useEffect(() => {
+        const getStudent = async() =>{
+            const student = await fetchStudentData();
+            setCurrentUser(student);
+        }
+
+        if(!currentUser)
+            console.log("no User");
+            getStudent();
+    }, []);
+
     return (
         <div className={style.curChecklist}>
             <HeaderWebsite pageName={pageName} logOut={signOut} />

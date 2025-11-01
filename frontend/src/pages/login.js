@@ -14,12 +14,16 @@ export default function Login({checkCredential}) {
         try{
             e.preventDefault(); // Prevent form from reloading page
             const success = await checkCredential(login_id, password);
-            if (success)
-                navigate("/checklist");
+            if (!success){
+                setError("Invalid login credentials");
+                throw new Error("Invalid login credentials");
+            }
+
+            navigate("/checklist");
         }
         catch (err){
             console.error('Login failed: ', err.response?.data || err.message);
-            setError("Invalid login credentials")
+            setError("Invalid login credentials");
         }
         
     };
