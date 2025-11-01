@@ -7,30 +7,61 @@ import './App.css';
 import axios from "axios";
 
 const UserContext = createContext(null)
+const CoursesContext = createContext(null)
+const fetchStudentInfo = createContext(null)
 const ProgramFunc = createContext(null)
 
 
 function App() {
-  const [currentUser, setCurrentUser] = useState(null); // 👈 logged-in admin
+  const [currentUser, setCurrentUser] = useState(null); 
+  const [courses, setCourses] = useState([]);
   const [programs, setPrograms] = useState(null);
 
+  const fetchStudentData = async (user) => {
+      const params = new URLSearchParams({
+          student_id: user?.id,
+          program_id: user?.program_id
+      }).toString();
+      try {
+          const res = await axios.get(
+              `http://127.0.0.1:8000/SC/get?${params}`,
+              { withCredentials: true }
+          );
+
+          return res.data
+
+      } catch (err) {
+          console.error("Failed to fetch student data: ", err);
+      }
+  };
+
   const programGet = async () => {
-  try {
-    const progrms = await axios.get("http://127.0.0.1:8000/program/get");
+    try {
+      const progrms = await axios.get("http://127.0.0.1:8000/program/get");
 
-    const programsMap = {};
-    progrms.data.forEach((p) => {
-      programsMap[p.program_id] = p;
-    });
+      const programsMap = {};
+      progrms.data.forEach((p) => {
+        programsMap[p.program_id] = p;
+      });
 
-    setPrograms(programsMap);
+      setPrograms(programsMap);
 
-    //return programsMap;
+      //return programsMap;
 
-  } catch (err) {
-    console.error("Getting programs failed: ", err);
-  }
-}; 
+    } catch (err) {
+      console.error("Getting programs failed: ", err);
+    }
+  }; 
+
+  const fetchCurrentStudent = async () => {
+    try {
+      const res = await axios.get("http://127.0.0.1:8000/student/get/details", { withCredentials: true })
+
+      return res.data.student;
+    } catch (err) {
+      console.error("Failed to fetch student data: ", err);
+    }
+  };
 
   const checkCredential = async (username, password) => {
     const response = await axios.post(
@@ -51,14 +82,10 @@ function App() {
 
     programGet()
 
-    axios
-    .get("http://127.0.0.1:8000/student/get/details", { withCredentials: true })
-    .then((res) => {
-        setCurrentUser(res.data.student);
-    })
-    .catch((err) => {
-        console.error("Failed to fetch student data: ", err);
-    });
+    const student = await fetchCurrentStudent();
+    setCurrentUser(student);
+    if(currentUser?.role === "student")
+      setCourses(fetchStudentData(currentUser));
     
     return response.status === 200;
 
@@ -66,13 +93,17 @@ function App() {
   return (
     <ProgramFunc.Provider value={programs}>
       <UserContext.Provider value={[currentUser, setCurrentUser]}>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Login checkCredential={checkCredential}/>} />
-            <Route path="/checklist" element={<Checklist />} />
-            <Route path="/program-checklist" element={<ProgramCourseList />} />
-          </Routes>
-        </Router>
+        <CoursesContext.Provider value={[courses, setCourses]}>
+          <fetchStudentInfo.Provider value={fetchStudentData}>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Login checkCredential={checkCredential}/>} />
+                <Route path="/checklist" element={<Checklist />} />
+                <Route path="/program-checklist" element={<ProgramCourseList />} />
+              </Routes>
+            </Router>
+          </fetchStudentInfo.Provider>
+        </CoursesContext.Provider>
       </UserContext.Provider>
     </ProgramFunc.Provider>
   );
@@ -84,6 +115,14 @@ export function useUser(){
 
 export function useGetProgram(){
   return useContext(ProgramFunc)
+}
+
+export function useCourses(){
+  return useContext(CoursesContext)
+}
+
+export function useFetchStudentInfo(){
+  return useContext(fetchStudentInfo)
 }
 
 export default App;

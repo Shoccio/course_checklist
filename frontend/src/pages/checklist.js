@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { FaPrint } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 import style from "../style/checklist.module.css";
+
 import StudentSearchBar from "../component/searchBar";
 import CourseTable from "../component/student_table";
 import AddStudent from "../component/addStudent";
 import EditStudent from "../component/editStudent";
 import HeaderWebsite from "../component/header";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { useUser } from "../App";
+
+import { useUser, useCourses, useFetchStudentInfo } from "../App";
 
 export default function Checklist() {
     const pageName = "CURRICULUM CHECKLIST";
     const navigate = useNavigate();
+    const fetchStudentData = useFetchStudentInfo()
 
     const [currentUser, setCurrentUser] = useUser();
     const [selectedStudent, setSelectedStudent] = useState(null);
-    const [courses, setCourses] = useState([]);
+    const [courses, setCourses] = useCourses()
     const [isViewing, setIsViewing] = useState(false);
 
     const signOut = async () => {
@@ -57,52 +61,12 @@ export default function Checklist() {
                 withCredentials: true,
             });
             setSelectedStudent(res.data.student);
-            fetchStudentData(res.data.student);
+            setCourses(fetchStudentData(res.data.student));
             setIsViewing(true);
         } catch (err) {
             console.error("Failed to fetch student details: ", err);
         }
     };
-
-    const fetchStudentData = async (user) => {
-        const params = new URLSearchParams({
-            student_id: user?.student_id,
-            program_id: user?.program_id
-        }).toString();
-        try {
-            const res = await axios.get(
-                `http://127.0.0.1:8000/SC/get?${params}`,
-                { withCredentials: true }
-            );
-
-            setCourses(res.data);
-
-        } catch (err) {
-            console.error("Failed to fetch student data: ", err);
-        }
-    };
-
-
-    // On initial mount — get the logged-in user and show them
-    useEffect(() => {
-        const fetchCurrentUser = async () => {
-            try {
-                const res = await axios.get("http://127.0.0.1:8000/student/get/details", {
-                    withCredentials: true
-                });
-                setCurrentUser(res.data.student);
-            } catch (err) {
-                console.error("Failed to fetch current user: ", err);
-                setCurrentUser(null);
-                // optionally redirect to login
-                // navigate("/");
-            }
-        };
-        fetchCurrentUser();
-
-        if(currentUser?.role === "student")
-            fetchStudentData(currentUser);
-    }, []);
 
     return (
         <div className={style.curChecklist}>
@@ -139,16 +103,21 @@ export default function Checklist() {
 
                     <div className={style.studentResidency}>
                         <div className={style.lBlock}>
-                            <span>Student ID: {selectedStudent?.student_id}</span>
-                            <span>Student Name: {selectedStudent?.student_l_name}, {selectedStudent?.student_f_name}</span>
-                            <span>Program/Major: {selectedStudent?.program_id}</span>
-                            <span>Total Units Required for this Course: {selectedStudent?.total_units_required}</span>
+                            <span>Student ID: {currentUser?.id ?? selectedStudent?.id ?? "N/A"}</span>
+                            <span>
+                                Student Name: {currentUser?.l_name ?? selectedStudent?.l_name ?? "N/A"},  
+                                {currentUser?.f_name ?? selectedStudent?.f_name ?? ""}
+                            </span>
+                            <span>Program/Major: {currentUser?.program_id ?? selectedStudent?.program_id ?? "N/A"}</span>
+                            <span>
+                                Total Units Required for this Course: 
+                                {currentUser?.total_units_required ?? selectedStudent?.total_units_required ?? "N/A"}</span>
                         </div>
                         <div className={style.rBlock}>
-                            <span>Year: {selectedStudent?.student_year}</span>
-                            <span>Status: {selectedStudent?.student_status}</span>
-                            <span>Total Units Taken: {selectedStudent?.units_taken}</span>
-                            <span>GWA: {selectedStudent?.gwa}</span>
+                            <span>Year: {currentUser?.year ?? selectedStudent?.year ?? "N/A"}</span>
+                            <span>Status: {currentUser?.status ?? selectedStudent?.status ?? "N/A"}</span>
+                            <span>Total Units Taken: {currentUser?.units_taken ?? selectedStudent?.units_taken ?? "N/A"}</span>
+                            <span>GWA: {currentUser?.gwa ?? selectedStudent?.gwa ?? "N/A"}</span>
                         </div>
                     </div>
 
