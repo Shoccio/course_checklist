@@ -57,7 +57,7 @@ function App() {
     try {
       const res = await axios.get("http://127.0.0.1:8000/student/get/details", { withCredentials: true })
 
-      return res.data.student;
+      return res.data;
     } catch (err) {
       console.error("Failed to fetch student data: ", err);
     }
@@ -82,10 +82,10 @@ function App() {
 
     programGet()
 
-    const student = await fetchCurrentStudent();
-    setCurrentUser(student);
-    //if(currentUser?.role === "student")
-    //  setCourses(fetchStudentData(currentUser));
+    const data = await fetchCurrentStudent();
+    setCurrentUser(data.student);
+    if(currentUser?.role === "student")
+      setCourses(data.courses);
     
     return response.status === 200;
 

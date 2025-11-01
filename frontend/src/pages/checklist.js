@@ -70,8 +70,11 @@ export default function Checklist() {
 
     useEffect(() => {
         const getStudent = async() =>{
-            const student = await fetchStudentData();
-            setCurrentUser(student);
+            const data = await fetchStudentData();
+            setCurrentUser(data.student);
+
+            if(currentUser?.role === "student")
+                setCourses(data.courses);
         }
 
         if(!currentUser)
