@@ -4,6 +4,6 @@ from db.firestore import fs
 def getProgramFirestore():
     docs = fs.collection("programs").stream()
 
-    ids = [doc.id for doc in docs]
+    ids = [{"id": doc.id, "name": doc.to_dict()["name"]} for doc in docs]
 
     return ids

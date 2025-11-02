@@ -17,36 +17,18 @@ function App() {
   const [courses, setCourses] = useState([]);
   const [programs, setPrograms] = useState(null);
 
-  /*const fetchStudentData = async (user) => {
-      const params = new URLSearchParams({
-          student_id: user?.id,
-          program_id: user?.program_id
-      }).toString();
-      try {
-          const res = await axios.get(
-              `http://127.0.0.1:8000/SC/get?${params}`,
-              { withCredentials: true }
-          );
-
-          return res.data
-
-      } catch (err) {
-          console.error("Failed to fetch student data: ", err);
-      }
-  };*/
-
   const programGet = async () => {
     try {
       const progrms = await axios.get("http://127.0.0.1:8000/program/get");
 
       const programsMap = {};
       progrms.data.forEach((p) => {
-        programsMap[p.program_id] = p;
+        programsMap[p] = p;
       });
 
-      setPrograms(programsMap);
+      //setPrograms(programsMap);
 
-      //return programsMap;
+      return progrms.data;
 
     } catch (err) {
       console.error("Getting programs failed: ", err);
@@ -91,7 +73,7 @@ function App() {
 
   };
   return (
-    <ProgramFunc.Provider value={programs}>
+    <ProgramFunc.Provider value={programGet}>
       <UserContext.Provider value={[currentUser, setCurrentUser]}>
         <CoursesContext.Provider value={[courses, setCourses]}>
           <fetchStudentInfo.Provider value={fetchCurrentStudent}>

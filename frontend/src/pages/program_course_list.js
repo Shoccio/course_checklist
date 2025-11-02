@@ -23,7 +23,12 @@ export default function ProgramCourseList({ currentUser }) {
   const getProgram = useGetProgram()
 
   useEffect(() => {
-    setPrograms(getProgram());
+    const getPrg = async() =>{
+      const prgrs = await getProgram();
+      setPrograms(prgrs);
+    }
+
+    getPrg();
   }, []);
 
   const signOut = async () => {
@@ -119,9 +124,9 @@ export default function ProgramCourseList({ currentUser }) {
           disabled={isEditing}
         >
           <option value="">Select Program</option>
-          {Object.values(programs).map((program) => (
-            <option key={program.program_id} value={program.program_id}>
-              {program.program_name}
+          {programs.map((program) => (
+            <option key={program.id} value={program.id}>
+              {program.name}
             </option>
           ))}
         </select>
