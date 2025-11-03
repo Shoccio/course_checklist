@@ -3,9 +3,11 @@ from db.firestore import fs
 def getCourseByProgram(program_id: str):
     program_courses_collection = fs.collection("program_course")
 
-    courses = program_courses_collection.document(program_id).collection("courses").stream()
+    courses = program_courses_collection.where("program_id", "==", program_id).stream()
 
     courses_dict = [course.to_dict() for course in courses]
+
+    courses_dict.sort(key=lambda x: (x["course_year"], x["course_sem"], x["sequence"]))
 
     return courses_dict
 

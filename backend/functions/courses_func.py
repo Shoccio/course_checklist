@@ -74,3 +74,5 @@ def updateCourses(program_id: str, courses: list[CourseSchema]):
     updateOrder(program_id, courses_ids)
     addCourseStudent(course_ids)
 
+
+

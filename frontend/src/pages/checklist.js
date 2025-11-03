@@ -72,14 +72,11 @@ export default function Checklist() {
         const getStudent = async() =>{
             const data = await fetchStudentData();
             setCurrentUser(data.student);
-
-            if(currentUser?.role === "student")
-                setCourses(data.courses);
+            
+            setCourses(data.courses);
         }
 
-        if(!currentUser)
-            console.log("no User");
-            getStudent();
+        getStudent();
     }, []);
 
     return (

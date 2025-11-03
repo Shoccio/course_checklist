@@ -1,4 +1,5 @@
 from functions import courses_func
+from functions.program_course_func import getCourseByProgram
 from functions.auth_func import checkRole
 from schema.course_schema import CourseSchema
 from fastapi import APIRouter, Depends
@@ -27,4 +28,4 @@ def updateCourses(program_id: str, course: list[CourseSchema],  role: str = chec
 
 @router.get("/get/{program_id}")
 def getCourse(program_id: str, role: str = checkRole(["admin", "student"])):
-    return courses_func.getCoursebyProgram(program_id)
+    return getCourseByProgram(program_id)

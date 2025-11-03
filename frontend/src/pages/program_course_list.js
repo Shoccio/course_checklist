@@ -12,7 +12,7 @@ export default function ProgramCourseList({ currentUser }) {
   const pageName = "PROGRAM COURSELIST";
   const navigate = useNavigate();
 
-  const [programs, setPrograms] = useState({});
+  const [programs, setPrograms] = useState([]);
   const [program_id, setProgram] = useState("");
   const [courses, setCourses] = useState([]);
   const [originalCourses, setOriginalCourses] = useState([]);
