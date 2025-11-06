@@ -6,9 +6,9 @@ import ProgramTable from "../component/program_table";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { useGetProgram } from "../App";
+import { useGetProgram, useUser, useFetchStudentInfo } from "../App";
 
-export default function ProgramCourseList({ currentUser }) {
+export default function ProgramCourseList() {
   const pageName = "PROGRAM COURSELIST";
   const navigate = useNavigate();
 
@@ -19,8 +19,11 @@ export default function ProgramCourseList({ currentUser }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
 
+  const [currentUser, setCurrentUser] = useUser();
+
   const printRef = useRef();
-  const getProgram = useGetProgram()
+  const getProgram = useGetProgram();
+  const fetchStudentData = useFetchStudentInfo();
 
   useEffect(() => {
     const getPrg = async() =>{

@@ -69,14 +69,11 @@ export default function Checklist() {
     };
 
     useEffect(() => {
-        const getStudent = async() =>{
-            const data = await fetchStudentData();
-            setCurrentUser(data.student);
-            
-            setCourses(data.courses);
-        }
+        const user = JSON.parse(sessionStorage.getItem("currentUser"));
+        setCurrentUser(user);
 
-        getStudent();
+        const courses = JSON.parse(sessionStorage.getItem("courses"));
+        setCourses(courses);
     }, []);
 
     return (

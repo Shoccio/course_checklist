@@ -15,7 +15,6 @@ const ProgramFunc = createContext(null)
 function App() {
   const [currentUser, setCurrentUser] = useState(null); 
   const [courses, setCourses] = useState([]);
-  const [programs, setPrograms] = useState(null);
 
   const programGet = async () => {
     try {
@@ -62,12 +61,13 @@ function App() {
 
     console.log(response.data);
 
-    programGet()
-
     const data = await fetchCurrentStudent();
+    sessionStorage.setItem("currentUser", JSON.stringify(data.student));
     setCurrentUser(data.student);
-    if(currentUser?.role === "student")
+    if(currentUser?.role === "student"){
       setCourses(data.courses);
+      sessionStorage.setItem("courses", JSON.stringify(data.courses));
+    }
     
     return response.status === 200;
 
