@@ -19,7 +19,7 @@ export default function StudentSearchBar({onSelectStudent}) {
                 withCredentials: true
             })
             .then((res) => {
-                setResults(res.data.results);
+                setResults(res.data);
                 setShowDropdown(true);
             })
             .catch((err) => {

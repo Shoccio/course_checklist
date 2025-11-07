@@ -6,12 +6,9 @@ from schema.user_schema import User
 from db.firestore import fs
 
 students_list = []
+student_collection = fs.collection("students").stream()
 
-def initializeStudentList():
-    global students_list
-    student_collection = fs.collection("students").stream
-
-    students_list = [student.to_dict() for student in student_collection]
+students_list = [{**student.to_dict(), "id": student.id} for student in student_collection]
 
 def addStudent(student: Student):
     student_collection = fs.collection("students")
@@ -70,12 +67,12 @@ def getStudent(user: User, student_id: str = None):
 def search_students(query: str):
     valid_students = []
     for student in students_list:
-        full_name = " ".join(student["l_name"], student["f_name"], student["m_name"])
+        full_name = " ".join(filter(None, [student["l_name"], student["f_name"], student["m_name"]])).lower()
 
-        if not query in full_name or not query in student["id"]:
+        if query not in full_name and query not in student["id"]:
             continue
 
-        valid_students.append()
+        valid_students.append(student)
 
     result = [
         {
