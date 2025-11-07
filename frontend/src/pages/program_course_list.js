@@ -26,12 +26,12 @@ export default function ProgramCourseList() {
   const fetchStudentData = useFetchStudentInfo();
 
   useEffect(() => {
-    const getPrg = async() =>{
-      const prgrs = await getProgram();
-      setPrograms(prgrs);
-    }
+    const programs = JSON.parse(sessionStorage.getItem("programs"));
 
-    getPrg();
+    setPrograms(programs);
+
+    const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+    setCurrentUser(currentUser);
   }, []);
 
   const signOut = async () => {
@@ -127,7 +127,7 @@ export default function ProgramCourseList() {
           disabled={isEditing}
         >
           <option value="">Select Program</option>
-          {programs.map((program) => (
+          {Object.values(programs).map((program) => (
             <option key={program.id} value={program.id}>
               {program.name}
             </option>
@@ -141,31 +141,34 @@ export default function ProgramCourseList() {
         <div className={style.programDetail}>
           <h3 style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             PROGRAM COURSELIST
-            <span className={style.buttonLoc}>
-              {!isEditing ? (
-                <>
-                  <FaPencilAlt
-                    title={program_id === "" ? "Select a program to enable editing" : "Enable Editing"}
-                    className={`${style.editIcon} ${program_id === "" ? style.disabled : ""}`}
-                    onClick={startEditing}
-                  />
-                  <FaPrint
-                    title="Print Program Course List"
-                    className={style.printIcon}
-                    onClick={handlePrint}
-                  />
-                </>
-              ) : (
-                <>
-                  <button onClick={saveEditing} className={style.buttons}>
-                    Save
-                  </button>
-                  <button onClick={cancelEditing} className={style.buttons}>
-                    Cancel
-                  </button>
-                </>
-              )}
-            </span>
+            {currentUser?.role === "admin" && (
+              <span className={style.buttonLoc}>
+                {!isEditing ? (
+                  <>
+                    <FaPencilAlt
+                      title={program_id === "" ? "Select a program to enable editing" : "Enable Editing"}
+                      className={`${style.editIcon} ${program_id === "" ? style.disabled : ""}`}
+                      onClick={startEditing}
+                    />
+                    <FaPrint
+                      title="Print Program Course List"
+                      className={style.printIcon}
+                      onClick={handlePrint}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <button onClick={saveEditing} className={style.buttons}>
+                      Save
+                    </button>
+                    <button onClick={cancelEditing} className={style.buttons}>
+                      Cancel
+                    </button>
+                  </>
+                )}
+              </span>
+            )}
+            
           </h3>
 
           <ProgramTable

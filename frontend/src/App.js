@@ -21,13 +21,17 @@ function App() {
       const progrms = await axios.get("http://127.0.0.1:8000/program/get");
 
       const programsMap = {};
+
       progrms.data.forEach((p) => {
-        programsMap[p] = p;
+        programsMap[p.id] = p;
+
       });
 
-      //setPrograms(programsMap);
+      sessionStorage.setItem("programs", JSON.stringify(programsMap));
 
-      return progrms.data;
+
+      return programsMap;
+
 
     } catch (err) {
       console.error("Getting programs failed: ", err);
@@ -61,13 +65,16 @@ function App() {
 
     console.log(response.data);
 
+    await programGet(); 
     const data = await fetchCurrentStudent();
+
     sessionStorage.setItem("currentUser", JSON.stringify(data.student));
+    sessionStorage.setItem("courses", JSON.stringify(data.courses));
+
     setCurrentUser(data.student);
-    if(currentUser?.role === "student"){
-      setCourses(data.courses);
-      sessionStorage.setItem("courses", JSON.stringify(data.courses));
-    }
+    setCourses(data.courses);
+    
+    const cur = JSON.parse(sessionStorage.getItem("currentUser"));
     
     return response.status === 200;
 

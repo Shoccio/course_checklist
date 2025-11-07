@@ -83,7 +83,7 @@ export default function CourseTable({ student_id, courses, role, onSelectStudent
                     </tr>
                 </thead>
                 <tbody>
-                    {courses.length === 0 ? (
+                    {courses?.length === 0 ? (
                         <tr>
                             <td colSpan="6" style={{ textAlign: "center" }}>
                                 No courses found.
