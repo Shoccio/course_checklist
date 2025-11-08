@@ -111,8 +111,11 @@ def getStudentCourses(student_id: str, program_id: str):
                         "year": student_course_dict["course_year"],
                         "semester": student_course_dict["course_sem"],
                         "grade": student_course_dict["grade"],
-                        "remark": student_course_dict["remark"] or "N/A"
+                        "remark": student_course_dict["remark"] or "N/A",
+                        "sequence": student_course_dict["sequence"]
                         })
+        
+    courses.sort(key = lambda x: (x["year"], x["semester"], x["sequence"]))
         
     return courses
 

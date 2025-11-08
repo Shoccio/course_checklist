@@ -42,6 +42,9 @@ export default function CourseTable({ student_id, courses, role, onSelectStudent
             console.error("Editing failed: ", editedGrade);
         }
 
+        courses[editIndex].grade = gradeToSend;
+        courses[editIndex].remark = editedRemark;
+
         setEditedCourse("");
         setEditIndex(null);
     };
