@@ -33,7 +33,7 @@ export default function CourseTable({ student_id, courses, role, onSelectStudent
         }
 
         try{
-            await axios.patch(`http://127.0.0.1:8000/SC/update-grade/${editedCourse}`,
+            await axios.patch(`http://127.0.0.1:8000/SC/update-grade/${student_id}-${editedCourse}`,
                 { grade: gradeToSend, remark: editedRemark },
                 { withCredentials: true }
             )
@@ -41,8 +41,6 @@ export default function CourseTable({ student_id, courses, role, onSelectStudent
         catch(err){
             console.error("Editing failed: ", editedGrade);
         }
-
-        await onSelectStudent(student_id);
 
         setEditedCourse("");
         setEditIndex(null);

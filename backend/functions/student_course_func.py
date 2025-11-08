@@ -134,7 +134,7 @@ def getGWA(courses):
 
     return round(total_weighted / total_units, 4)  # Rounded to 4 decimal places
 
-def updateGrades(course_id: str, student_id, grade: float):
+def updateGrades(course_id: str, student_id: str, grade: float, remark: str):
     if grade == -1.0:
         grade = None
 
@@ -145,7 +145,7 @@ def updateGrades(course_id: str, student_id, grade: float):
     if len(course) == 0:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Student/Course not found")
     
-    course[0].reference.update({"grade": grade})
+    course[0].reference.update({"grade": grade, "remark": remark})
 
 
     

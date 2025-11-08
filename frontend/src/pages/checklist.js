@@ -61,7 +61,7 @@ export default function Checklist() {
                 withCredentials: true,
             });
             setSelectedStudent(res.data.student);
-            setCourses(fetchStudentData(res.data.student));
+            setCourses(res.data.courses);
             setIsViewing(true);
         } catch (err) {
             console.error("Failed to fetch student details: ", err);
@@ -130,7 +130,7 @@ export default function Checklist() {
                     </div>
 
                     <CourseTable
-                        student_id={selectedStudent?.student_id}
+                        student_id={selectedStudent?.id}
                         courses={courses}
                         role={currentUser?.role} // still pass the *logged-in user’s role*
                         onSelectStudent={handleStudentSelect}
