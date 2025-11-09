@@ -11,11 +11,11 @@ def addEntry(student_id: str, program_id: str):
 
     student_course = [
         {
+            **course.to_dict(),
             "student_id": student_id,
-            "course_id": course.to_dict()["course_id"],
             "grade": None,
             "remark": "",
-            "reference": course.reference
+
         }
         for course in courses
     ]

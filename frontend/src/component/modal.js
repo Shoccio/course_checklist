@@ -8,9 +8,9 @@ export default function Modal({title, programs, formData, handleSubmit, handleCh
             <div className={style.modalContent}>
                 <h3>{title}</h3>
                 <form onSubmit={handleSubmit} className={style.modalForm}>
-                <input name="student_id" value={formData.student_id} onChange={handleChange} placeholder="Student ID" required />
-                <input name="student_email" value={formData.student_email} onChange={handleChange} placeholder="Email" required />
-                <input name="student_dept" value={formData.student_dept} onChange={handleChange} placeholder="Department" required />
+                <input name="id" value={formData.id} onChange={handleChange} placeholder="Student ID" required />
+                <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
+                <input name="dept" value={formData.dept} onChange={handleChange} placeholder="Department" required />
                 <select name="program_id" value={formData.program_id} onChange={handleChange} required>
                     <option value="">Select Program</option>
                     {Object.values(programs).map((program) => {
@@ -21,11 +21,11 @@ export default function Modal({title, programs, formData, handleSubmit, handleCh
                     );
                     })}
                 </select>
-                <input name="student_f_name" value={formData.student_f_name} onChange={handleChange} placeholder="First Name" required />
-                <input name="student_l_name" value={formData.student_l_name} onChange={handleChange} placeholder="Last Name" required />
-                <input name="student_m_name" value={formData.student_m_name} onChange={handleChange} placeholder="Middle Name" />
-                <input name="student_year" value={formData.student_year} onChange={handleChange} placeholder="Year" type="number" required />
-                <select name="student_status" value={formData.student_status} onChange={handleChange} required>
+                <input name="f_name" value={formData.f_name} onChange={handleChange} placeholder="First Name" required />
+                <input name="l_name" value={formData.l_name} onChange={handleChange} placeholder="Last Name" required />
+                <input name="m_name" value={formData.m_name} onChange={handleChange} placeholder="Middle Name" />
+                <input name="year" value={formData.year} onChange={handleChange} placeholder="Year" type="number" required />
+                <select name="status" value={formData.sstatus} onChange={handleChange} required>
                     <option value="">Select Status</option>
                     <option value="Regular">Regular</option>
                     <option value="Irregular">Irregular</option>

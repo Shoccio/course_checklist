@@ -15,6 +15,8 @@ def addStudent(student: Student):
 
     student_info = student.model_dump()
 
+    students_list.append(student.model_dump())
+
     del student_info["id"]
     student_collection.document(student.id).set(student_info)
 

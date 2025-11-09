@@ -9,15 +9,15 @@ export default function AddStudent({ onSubmit }) {
   const [programs, setPrograms] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
-    student_id: "",
-    student_email: "",
-    student_dept: "",
+    id: "",
+    email: "",
+    dept: "",
     program_id: "",
-    student_f_name: "",
-    student_l_name: "",
-    student_m_name: "",
-    student_year: "",
-    student_status: "",
+    f_name: "",
+    l_name: "",
+    m_name: "",
+    year: "",
+    status: "",
   });
 
   const handleChange = (e) => {
@@ -31,15 +31,15 @@ export default function AddStudent({ onSubmit }) {
     onSubmit(formData);
     setShowModal(false);
     setFormData({
-    student_id: "",
-    email: "",
-    department: "",
-    program: "",
-    student_f_name: "",
-    student_l_name: "",
-    student_m_name: "",
-    year: "",
-    status: "",
+      id: "",
+      email: "",
+      dept: "",
+      program_id: "",
+      f_name: "",
+      l_name: "",
+      m_name: "",
+      year: "",
+      status: "",
     });
   };
 
@@ -47,7 +47,7 @@ export default function AddStudent({ onSubmit }) {
     const progrs = JSON.parse(sessionStorage.getItem("programs"));
 
     setPrograms(progrs);
-    
+
     if(showModal){
       document.body.style.overflow = "hidden";
     }

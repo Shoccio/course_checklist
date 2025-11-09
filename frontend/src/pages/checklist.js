@@ -35,7 +35,7 @@ export default function Checklist() {
 
     const addStudent = async (student) => {
         try {
-            await axios.post("http://127.0.0.1:8000/student/add", { student }, { withCredentials: true });
+            await axios.post("http://127.0.0.1:8000/student/add", student, { withCredentials: true });
             handleStudentSelect(student.student_id);
         } catch (err) {
             console.error("Adding failed:", err);
