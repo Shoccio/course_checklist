@@ -4,11 +4,9 @@ import Modal from "./modal";
 import { FaPlus } from "react-icons/fa";
 import { createPortal } from "react-dom";
 
-import { useGetProgram } from "../App";
-
 export default function AddStudent({ onSubmit }) {
   let title = "Add New Student";
-  const programs = useGetProgram();
+  const [programs, setPrograms] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     student_id: "",
@@ -21,8 +19,6 @@ export default function AddStudent({ onSubmit }) {
     student_year: "",
     student_status: "",
   });
-
-  const getProgram = useGetProgram();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,6 +44,10 @@ export default function AddStudent({ onSubmit }) {
   };
 
   useEffect(() => {
+    const progrs = JSON.parse(sessionStorage.getItem("programs"));
+
+    setPrograms(progrs);
+    
     if(showModal){
       document.body.style.overflow = "hidden";
     }
