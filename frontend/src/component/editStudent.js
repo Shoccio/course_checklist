@@ -5,46 +5,43 @@ import style from "../style/button.module.css"
 import { FaPen, FaPlus } from "react-icons/fa";
 import { createPortal } from "react-dom";
 
-import { useGetProgram } from "../App";
-
 export default function EditStudent({ onSubmit, student, isViewing }) {
     let title = "Edit Student"
-    const programs = useGetProgram();
+    const [programs, setPrograms] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({
-    student_id: "",
-    student_email: "",
-    student_dept: "",
-    program_id: "",
-    student_f_name: "",
-    student_l_name: "",
-    student_m_name: "",
-    student_year: "",
-    student_status: "",
+        id: "",
+        email: "",
+        dept: "",
+        program_id: "",
+        f_name: "",
+        l_name: "",
+        m_name: "",
+        year: "",
+        status: "",
     });
 
-    const getProgram = useGetProgram()
     const handleChange = (e) => {
-    const { name, value } = e.target;
+        const { name, value } = e.target;
 
-    setFormData({ ...formData, [name]: value });
+        setFormData({ ...formData, [name]: value });
     };
 
     const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData, student.student_id);
-    setShowModal(false);
-    setFormData({
-        student_id: "",
-        student_email: "",
-        student_dept: "",
-        program_id: "",
-        student_f_name: "",
-        student_l_name: "",
-        student_m_name: "",
-        student_year: "",
-        student_status: "",
-    });
+        e.preventDefault();
+        onSubmit(formData, student.student_id);
+        setShowModal(false);
+        setFormData({
+            id: "",
+            email: "",
+            dept: "",
+            program_id: "",
+            f_name: "",
+            l_name: "",
+            m_name: "",
+            year: "",
+            status: "",
+        });
     };
 
 
@@ -65,18 +62,24 @@ export default function EditStudent({ onSubmit, student, isViewing }) {
     useEffect(() => {
         if (student) {
             setFormData({
-                student_id: student.student_id || "",
-                student_email: student.student_email || "",
-                student_dept: student.student_dept || "",
+                id: student.id || "",
+                email: student.email || "",
+                dept: student.dept || "",
                 program_id: student.program_id || "",
-                student_f_name: student.student_f_name || "",
-                student_l_name: student.student_l_name || "",
-                student_m_name: student.student_m_name || "",
-                student_year: student.student_year || "",
-                student_status: student.student_status || "",
+                f_name: student.f_name || "",
+                l_name: student.l_name || "",
+                m_name: student.m_name || "",
+                year: student.year || "",
+                status: student.status || "",
             });
         }
     }, [student]);
+
+    useEffect(() => {
+        const progrs = JSON.parse(sessionStorage.getItem("programs"));
+
+        setPrograms(progrs);
+    }, []);
 
     return (
     <>

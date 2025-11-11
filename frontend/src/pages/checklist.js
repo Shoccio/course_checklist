@@ -42,14 +42,14 @@ export default function Checklist() {
         }
     };
 
-    const editStudent = async (student, old_id) => {
+    const editStudent = async (student, id) => {
         try {
             await axios.put(
-                `http://127.0.0.1:8000/student/edit/${old_id}`,
+                `http://127.0.0.1:8000/student/edit/${id}`,
                 student,
                 { withCredentials: true }
             );
-            handleStudentSelect(student.student_id);
+            handleStudentSelect(student.id);
         } catch (err) {
             console.error("Editing failed:", err);
         }
