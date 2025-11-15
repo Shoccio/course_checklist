@@ -12,7 +12,7 @@ router = APIRouter()
 def addStudent(student: Student):
     return addStudentHelper(student)
 
-@router.put("/edit/{student_id}")
+@router.put("/edit")
 def editStudent(student: Student):
     return student_func.editStudent(student)
 

@@ -29,19 +29,8 @@ export default function EditStudent({ onSubmit, student, isViewing }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit(formData, student.student_id);
+        onSubmit(formData);
         setShowModal(false);
-        setFormData({
-            id: "",
-            email: "",
-            dept: "",
-            program_id: "",
-            f_name: "",
-            l_name: "",
-            m_name: "",
-            year: "",
-            status: "",
-        });
     };
 
 

@@ -42,10 +42,10 @@ export default function Checklist() {
         }
     };
 
-    const editStudent = async (student, id) => {
+    const editStudent = async (student) => {
         try {
             await axios.put(
-                `http://127.0.0.1:8000/student/edit/${id}`,
+                `http://127.0.0.1:8000/student/edit`,
                 student,
                 { withCredentials: true }
             );

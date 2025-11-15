@@ -23,7 +23,10 @@ def addStudent(student: Student):
 def editStudent(student: Student):
     student_collection = fs.collection("students")
 
-    student_collection.document(student.id).set(student.__dict__)
+    student_info = student.model_dump()
+    del student_info["id"]
+
+    student_collection.document(student.id).set(student_info)
 
 def deleteStudent(student_id: str):
     student = fs.collection("students").document(student_id)
