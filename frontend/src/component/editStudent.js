@@ -96,7 +96,8 @@ export default function EditStudent({ onSubmit, student, isViewing }) {
         {showModal && createPortal(
                     <Modal title={title} programs={programs} formData={formData} 
                             handleSubmit={handleSubmit} handleChange={handleChange} 
-                            onClose={() => setShowModal(false)} />
+                            onClose={() => setShowModal(false)}
+                            isEdit={true} />
                             , document.body
         )}
     </>

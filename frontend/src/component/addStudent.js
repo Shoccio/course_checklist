@@ -71,7 +71,8 @@ export default function AddStudent({ onSubmit }) {
       {showModal && createPortal(
                     <Modal title={title} programs={programs} formData={formData} 
                           handleSubmit={handleSubmit} handleChange={handleChange} 
-                          onClose={() => setShowModal(false)} />
+                          onClose={() => setShowModal(false)}
+                          isEdit={false} />
                           , document.body
       )}
     </>
