@@ -3,6 +3,7 @@ import { createContext, useContext, useState } from "react";
 import Login from "./pages/login"
 import Checklist from "./pages/checklist"
 import ProgramCourseList from "./pages/program_course_list";
+import Dashbaord from "./pages/dashboard";
 import './App.css';
 import axios from "axios";
 
@@ -89,6 +90,7 @@ function App() {
                 <Route path="/" element={<Login checkCredential={checkCredential}/>} />
                 <Route path="/checklist" element={<Checklist />} />
                 <Route path="/program-checklist" element={<ProgramCourseList />} />
+                <Route path="/dashboard" element={<Dashbaord />} />
               </Routes>
             </Router>
           </fetchStudentInfo.Provider>

@@ -6,7 +6,7 @@ import ProgramTable from "../component/program_table";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { useGetProgram, useUser, useFetchStudentInfo } from "../App";
+import { useUser } from "../App";
 
 export default function ProgramCourseList() {
   const pageName = "PROGRAM COURSELIST";
@@ -22,8 +22,7 @@ export default function ProgramCourseList() {
   const [currentUser, setCurrentUser] = useUser();
 
   const printRef = useRef();
-  const getProgram = useGetProgram();
-  const fetchStudentData = useFetchStudentInfo();
+
 
   useEffect(() => {
     const programs = JSON.parse(sessionStorage.getItem("programs"));
