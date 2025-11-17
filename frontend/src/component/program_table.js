@@ -32,6 +32,7 @@ function SortableRow({
   course,
   isTableEditing,
   isRowEditing,
+  isAddingCourse,
   onRowEditClick,
   onRowSaveClick,
   onRowCancelClick,
@@ -58,7 +59,8 @@ function SortableRow({
   return (
     <tr ref={setNodeRef} style={rowStyle} className={style.defaultRow}>
       <td>
-        {isRowEditing ? (
+
+        {isAddingCourse && isRowEditing ? (
           <input
             type="text"
             value={normalized.course_id}
@@ -66,7 +68,7 @@ function SortableRow({
           />
         ) : (
           normalized.course_id
-        )}
+          )}
       </td>
 
       <td>
@@ -183,6 +185,8 @@ function SortableRow({
 
 export default function ProgramTable({
   courses,
+  isAdding,
+  onSetIsAdding,
   isEditing,
   editingRowId,
   onSetEditingRowId,
@@ -212,7 +216,13 @@ export default function ProgramTable({
     onReorder(reordered);
   };
 
+  const handleCancel = () => {
+    onSetEditingRowId(null)
+    onSetIsAdding(false)
+  }
+
   const handleAddCourseClick = (year, sem) => {
+    
     const newId = onAddCourse(year, sem);
     if (newId) onSetEditingRowId(newId);
   };
@@ -244,11 +254,12 @@ export default function ProgramTable({
       <SortableRow
         key={course.course_id}
         course={course}
+        isAddingCourse={isAdding}
         isTableEditing={isEditing}
         isRowEditing={editingRowId === course.course_id}
         onRowEditClick={() => onSetEditingRowId(course.course_id)}
         onRowSaveClick={() => onSetEditingRowId(null)}
-        onRowCancelClick={() => onSetEditingRowId(null)}
+        onRowCancelClick={() => handleCancel()}
         onRowDeleteClick={() => onCourseDelete(course.course_id)}
         onFieldChange={(field, value) => onCourseChange(course.course_id, field, value)}
         disableDrag={!isEditing}

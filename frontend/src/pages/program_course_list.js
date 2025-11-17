@@ -17,6 +17,7 @@ export default function ProgramCourseList() {
   const [courses, setCourses] = useState([]);
   const [originalCourses, setOriginalCourses] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
 
   const [currentUser, setCurrentUser] = useUser();
@@ -83,6 +84,7 @@ export default function ProgramCourseList() {
   const cancelEditing = () => {
     setCourses(originalCourses);
     setIsEditing(false);
+    setIsAdding(false);
     setEditingRowId(null);
   };
 
@@ -173,6 +175,8 @@ export default function ProgramCourseList() {
           <ProgramTable
             courses={courses}
             isEditing={isEditing}
+            isAdding={isAdding}
+            onSetIsAdding={setIsAdding}
             editingRowId={editingRowId}
             onSetEditingRowId={setEditingRowId}
             onReorder={(newOrder) => setCourses(newOrder)}
@@ -193,6 +197,7 @@ export default function ProgramCourseList() {
             }}
             onCourseDelete={(id) => setCourses((prev) => prev.filter((c) => c.course_id !== id))}
             onAddCourse={(year, sem) => {
+              setIsAdding(true);
               const newId = `new-${Date.now()}`;
               const newCourse = {
                 course_id: newId,
