@@ -75,8 +75,9 @@ function SortableRow({
         {isRowEditing ? (
           <input
             type="text"
-            value={normalized.course_name}
+            value={normalized.course_name || "Course"}
             onChange={(e) => onFieldChange("course_name", e.target.value)}
+            required
           />
         ) : (
           normalized.course_name

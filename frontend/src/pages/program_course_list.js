@@ -201,12 +201,12 @@ export default function ProgramCourseList() {
               const newId = `new-${Date.now()}`;
               const newCourse = {
                 course_id: newId,
-                course_name: "",
+                course_name: "Course",
                 course_year: year,
                 course_sem: sem,
                 course_hours: 0,
                 course_units: 0,
-                course_preq: "",
+                course_preq: "None",
                 hours_lec: 0,
                 hours_lab: 0,
                 units_lec: 0,
