@@ -35,13 +35,14 @@
 
 .banner{
     display: flex;
+    flex-direction: column;
     position: absolute;
     top: 0px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, calc(-43.5px * 4));
+    overflow: hidden;
 
     width: 500px;
-    height: 60px;
 
     justify-content: center;
     align-items: center;
@@ -55,4 +56,10 @@
     border-bottom-right-radius: 20px;
     padding: 1rem;
     z-index: 2;
+
+    transition: transform 0.5s ease-in-out;
+}
+
+.banner.animated{
+    transform: translate(-50%, 0%);
 }
