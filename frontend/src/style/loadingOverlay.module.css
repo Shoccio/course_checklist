@@ -1,0 +1,23 @@
+.screen{
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(0.2);
+
+    z-index: 9999;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: aliceblue;
+    font-size: 2rem;
+
+    overflow: auto;
+
+}

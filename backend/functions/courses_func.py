@@ -47,10 +47,11 @@ def updateCourses(program_id: str, courses: list[CourseSchema]):
     courses_collection = fs.collection("courses")
     student_courses_collection = fs.collection("student_courses")
 
+    """
     checkCourses(fields_to_check, courses_dict, courses_collection)
     checkCollection(fields_to_check, courses_dict, program_courses_collection)
     checkCollection(fields_to_check, courses_dict, student_courses_collection)
-
+"""
 
 
 def checkCourses(fields: list[str], courses: dict, collection):

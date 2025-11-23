@@ -3,6 +3,7 @@ import { FaPencilAlt, FaPrint } from "react-icons/fa";
 import style from "../style/programlist.module.css";
 import HeaderWebsite from "../component/header";
 import ProgramTable from "../component/program_table";
+import LoadingOverlay from "../component/loadingOverlay";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -18,6 +19,7 @@ export default function ProgramCourseList() {
   const [originalCourses, setOriginalCourses] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
 
   const [currentUser, setCurrentUser] = useUser();
@@ -89,6 +91,10 @@ export default function ProgramCourseList() {
   };
 
   const saveEditing = async () => {
+    setIsUpdating(true);
+    document.body.style.cursor = "wait";
+    document.body.style.pointerEvents = "none";
+    document.body.style.overflow = "hidden";
     try {
       const payload = courses.map((c) => {
         const isLab = c.course_id.trim().toLowerCase().endsWith("l");
@@ -110,6 +116,11 @@ export default function ProgramCourseList() {
     } catch (err) {
       console.error("Failed to save courses", err);
     }
+
+    document.body.style.cursor = "default";
+    document.body.style.pointerEvents = "auto";
+    document.body.style.overflow = "auto";
+    setIsUpdating(false);
   };
 
   const handlePrint = () => {
@@ -118,6 +129,8 @@ export default function ProgramCourseList() {
 
   return (
     <div className={style.programChecklist}>
+      {isUpdating && <LoadingOverlay /> }
+
       <HeaderWebsite pageName={pageName} logOut={signOut} />
       <div className={style.courseBody} ref={printRef}>
         <select
