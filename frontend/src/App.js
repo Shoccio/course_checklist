@@ -88,8 +88,8 @@ function App() {
             <Router>
               <Routes>
                 <Route path="/" element={<Login checkCredential={checkCredential}/>} />
-                <Route path="/checklist" element={<Checklist />} />
-                <Route path="/program-checklist" element={<ProgramCourseList />} />
+                <Route path="/curriculum-checklist" element={<Checklist />} />
+                <Route path="/program-courselist" element={<ProgramCourseList />} />
                 <Route path="/dashboard" element={<Dashbaord />} />
               </Routes>
             </Router>

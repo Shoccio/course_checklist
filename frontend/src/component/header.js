@@ -26,8 +26,8 @@ export default function HeaderWebsite({ pageName, logOut }){
             <div className={isDown ? `${style.banner} ${style.animated}`  : style.banner}>
                 {
                     pageList.map(page =>
-                        pageName !== page.link &&
-                        <a>{page.link}</a>
+                        pageName.toLowerCase() !== page.link.toLowerCase() &&
+                        <a key={page.link} onClick={() => navigate("/" + page.link.toLowerCase().replace(" ", "-"))}>{page.link}</a>
                     )
                 }
                 <a onClick={setBannerDown}>{pageName}</a>
