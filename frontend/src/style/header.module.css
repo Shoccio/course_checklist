@@ -39,7 +39,7 @@
     position: absolute;
     top: 0px;
     left: 50%;
-    transform: translate(-50%, calc(-43.5px * 4));
+    transform: translate(-50%, calc(-55.5px * 3));
     overflow: hidden;
 
     width: 500px;
@@ -58,6 +58,11 @@
     z-index: 2;
 
     transition: transform 0.5s ease-in-out;
+}
+
+.banner a{
+    cursor: pointer;
+    margin: 10px;
 }
 
 .banner.animated{

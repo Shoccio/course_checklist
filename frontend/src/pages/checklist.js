@@ -14,7 +14,7 @@ import HeaderWebsite from "../component/header";
 import { useUser, useCourses, useFetchStudentInfo } from "../App";
 
 export default function Checklist() {
-    const pageName = "CURRICULUM CHECKLIST";
+    const pageName = "Curriculum Checklist";
     const navigate = useNavigate();
     const fetchStudentData = useFetchStudentInfo()
 
