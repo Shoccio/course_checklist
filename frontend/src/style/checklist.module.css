@@ -46,6 +46,8 @@
     justify-content: center;
     text-align: center;
     color: #1c4da1;
+
+    font-size: 12px;
 }
 
 .buttons{
@@ -114,3 +116,21 @@
 }
 
 
+@media (max-width: 480px) {
+    .studentDetail {
+        padding: 10px;
+    }
+
+    .buttons{
+        gap: 10px;
+    }
+
+    .studentDetail .lBlock,
+    .studentDetail .rBlock {
+        width: 100%;
+    }
+
+    .studentResidency {
+        flex-direction: column;
+    }
+}

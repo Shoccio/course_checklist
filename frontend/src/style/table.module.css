@@ -246,3 +246,67 @@ table svg:hover {
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+@media (max-width: 480px){
+    .legendContainer{
+        font-size: 0.6em;
+    }
+
+    .legendBox{
+        width: 10px;
+        height: 10px;
+    }   
+
+    .button{
+        width: 5rem;
+        font-size: 0.8em;
+    }
+
+    /* Table responsive sizing */
+    table {
+        font-size: 11px;
+        width: 100%;
+    }
+
+    thead tr {
+        font-size: 10px;
+    }
+
+    td, th {
+        padding: 6px 3px;
+        font-size: 10px;
+    }
+
+    table input[type="text"],
+    table select {
+        width: 85%;
+        padding: 3px;
+        font-size: 11px;
+    }
+
+    table button {
+        padding: 3px 8px;
+        font-size: 10px;
+    }
+
+    .modalContent {
+        width: 95%;
+        padding: 1.5rem 1rem;
+    }
+
+    .modalContent h2 {
+        font-size: 18px;
+        margin-bottom: 1rem;
+    }
+
+    .modalContent input {
+        padding: 0.4rem;
+        margin-bottom: 0.8rem;
+        font-size: 14px;
+    }
+
+    .modalButtons button {
+        padding: 0.4rem;
+        font-size: 12px;
+    }
+}
