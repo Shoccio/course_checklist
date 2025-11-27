@@ -150,5 +150,40 @@ def updateGrades(course_id: str, student_id: str, grade: float, remark: str):
     
     course[0].reference.update({"grade": grade, "remark": remark})
 
-
+def updateGradesBulk(student_id: str, grades_list: list):
+    student_course_collection = fs.collection("student_courses")
+    batch = fs.batch()
+    index = 0
+    chunk_size = 500
     
+    for grade_entry in grades_list:
+        course_id = grade_entry["course_id"]
+        grade = grade_entry["grade"]
+        
+        
+        if grade == -1.0:
+            grade = None
+        
+        remark = getRemark(grade)
+        courses = list(student_course_collection.where("course_id", "==", course_id).where("student_id", "==", student_id).stream())
+        
+        if len(courses) == 0:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, f"Course {course_id} not found for student {student_id}")
+        
+        batch.update(courses[0].reference, {"grade": grade, "remark": remark})
+        index += 1
+        
+        if index % chunk_size == 0:
+            batch.commit()
+            batch = fs.batch()
+    
+    batch.commit()
+    return {"message": "Grades updated successfully"}
+
+def getRemark(grade: float | None) -> str:
+    if grade is None:
+        return "N/A"
+    elif grade <= 2.5:
+        return "Passed"
+    else:
+        return "Failed"

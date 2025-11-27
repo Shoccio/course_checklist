@@ -10,6 +10,7 @@ import CourseTable from "../component/student_table";
 import AddStudent from "../component/addStudent";
 import EditStudent from "../component/editStudent";
 import HeaderWebsite from "../component/header";
+import { BulkGradeUpload } from "../component/student_table";
 
 import { useUser, useCourses, useFetchStudentInfo } from "../App";
 
@@ -132,7 +133,7 @@ export default function Checklist() {
                     <CourseTable
                         student_id={selectedStudent?.id}
                         courses={courses}
-                        role={currentUser?.role} // still pass the *logged-in user’s role*
+                        role={currentUser?.role}
                         onSelectStudent={handleStudentSelect}
                     />
                 </div>

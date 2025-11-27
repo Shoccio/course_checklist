@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { FaPencilAlt } from "react-icons/fa"; // pencil icon
-import style from "../style/table.module.css"; // adjust if needed
+import { FaPencilAlt } from "react-icons/fa";
+import style from "../style/table.module.css";
 import axios from "axios";
 
 // 🔧 Helper function to add ordinal suffix to numbers (1 -> 1st, 2 -> 2nd, etc.)
@@ -15,12 +15,23 @@ export default function CourseTable({ student_id, courses, role, onSelectStudent
     const [editIndex, setEditIndex] = useState(null);
     const [editedGrade, setEditedGrade] = useState("");
     const [editedRemark, setEditedRemark] = useState("");
+    const [showBulkUpload, setShowBulkUpload] = useState(false);
 
     const handleEditClick = (index, course_id, grade, remark) => {
         setEditIndex(index);
         setEditedCourse(course_id)
         setEditedGrade(grade ?? "");
         setEditedRemark(remark ? remark: "Passed");
+    };
+
+    const refreshStudentData = async () => {
+        setShowBulkUpload(false);
+        try{
+            await onSelectStudent(student_id);
+        }
+        catch(err){
+            console.error("Refreshing student data failed:", err);
+        }
     };
 
     const handleSave = async () => {
@@ -51,10 +62,9 @@ export default function CourseTable({ student_id, courses, role, onSelectStudent
 
     return (
         <>
-            <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                Curriculum Residency Evaluation
-                
-            </h3>
+            <div className={style.tableHeader}>
+                <h3>Curriculum Residency Evaluation</h3>
+            </div>
 
             <div className={style.legendContainer}>
                 <div className={style.legendItem}>
@@ -69,7 +79,25 @@ export default function CourseTable({ student_id, courses, role, onSelectStudent
                     <div className={`${style.legendBox} ${style.failedBox}`}></div>
                     <span>Failed</span>
                 </div>
+
+                {role && role === "admin" && (
+                    <button 
+                        className={style.button} 
+                        onClick={() => setShowBulkUpload(true)}
+                        disabled={!student_id}
+                    >
+                        Bulk Upload Grades
+                    </button>
+                )}
             </div>
+
+            {showBulkUpload && (
+                <BulkGradeUpload 
+                    student_id={student_id} 
+                    onSuccess={() => refreshStudentData()}
+                    onClose={() => setShowBulkUpload(false)}
+                />
+            )}
 
             <table className={style.tble}>
                 <thead>
@@ -80,7 +108,6 @@ export default function CourseTable({ student_id, courses, role, onSelectStudent
                         <th>CREDIT EARNED</th>
                         <th>GRADE</th>
                         <th>REMARK</th>
-                        {role && role === "admin" && <th>&nbsp;</th>}
                     </tr>
                 </thead>
                 <tbody>
@@ -159,17 +186,6 @@ export default function CourseTable({ student_id, courses, role, onSelectStudent
                                                 <button onClick={handleSave}>Save</button>
                                             </td>
                                         )}
-                                        {!isEditing && role && role === "admin" && (
-                                            <td>
-                                                <FaPencilAlt
-                                                    style={{ cursor: "pointer" }}
-                                                    title="Edit"
-                                                    onClick={() =>
-                                                        handleEditClick(index, course.course_id, course.grade, "Passed")
-                                                    }
-                                                />
-                                            </td>
-                                        )}
                                     </tr>
                                 );
                             });
@@ -180,5 +196,79 @@ export default function CourseTable({ student_id, courses, role, onSelectStudent
                 </tbody>
             </table>
         </>
+    );
+}
+
+// Add this new component or update your existing one that handles grade editing
+
+export function BulkGradeUpload({ student_id, onSuccess, onClose }) {
+    const [file, setFile] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    // Disable scrolling when modal opens
+    React.useEffect(() => {
+        document.body.style.overflow = "hidden";
+        return () => {
+            document.body.style.overflow = "unset";
+        };
+    }, []);
+
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+        setError("");
+    };
+
+    const handleUpload = async () => {
+        if (!file) {
+            setError("Please select a CSV file");
+            return;
+        }
+
+        setLoading(true);
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            await axios.post(
+                `http://127.0.0.1:8000/SC/update-grades-bulk/${student_id}`,
+                formData,
+                {
+                    headers: { "Content-Type": "multipart/form-data" },
+                    withCredentials: true,
+                }
+            );
+            alert("Grades updated successfully!");
+            setFile(null);
+            onSuccess();
+        } catch (err) {
+            setError(err.response?.data?.detail || "Failed to upload grades");
+            console.error("Upload failed:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className={style.modalOverlay} onClick={onClose}>
+            <div className={style.modalContent} onClick={(e) => e.stopPropagation()}>
+                <h2>Upload Grades</h2>
+                <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileChange}
+                    disabled={loading}
+                />
+                <div className={style.modalButtons}>
+                    <button onClick={handleUpload} disabled={loading || !file}>
+                        {loading ? "Uploading..." : "Upload"}
+                    </button>
+                    <button onClick={onClose} disabled={loading}>
+                        Cancel
+                    </button>
+                </div>
+                {error && <span style={{ color: "red" }}>{error}</span>}
+            </div>
+        </div>
     );
 }
