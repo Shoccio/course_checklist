@@ -1,8 +1,7 @@
-
 .page.loginPage{
     margin: 0;
     padding: 0;
-    background-color: #007BFF; /* A nice blue */
+    background-color: #007BFF;
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -111,5 +110,121 @@
     font-size: 50px;
     color: rgb(150, 150, 150);
     font-weight: 900;
+}
+
+/* iPad (768px and up) */
+@media (max-width: 1024px) {
+    form{
+        width: 100%;
+    }
+    .login {
+        width: 90%;
+        height: auto;
+        min-height: 600px;
+    }
+
+    .login .logForm {
+        width: 80%;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .login .leftBlock h1 {
+        font-size: 45px;
+    }
+
+    .login .welcome {
+        font-size: 35px;
+    }
+
+    .perpetualite {
+        font-size: 35px;
+    }
+}
+
+/* iPhone 12 Pro (390px) */
+@media (max-width: 480px) {
+    .login {
+        width: 95%;
+        height: auto;
+        min-height: 500px;
+        border-radius: 0;
+    }
+
+    .login header {
+        border-radius: 0;
+    }
+
+    .login .loginBody {
+        flex-direction: column;
+    }
+
+    .login .block {
+        width: 100%;
+    }
+
+    .login .leftBlock {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 8px;
+    }
+
+    .login .logForm {
+        width: 85%;
+        max-width: 280px;
+        height: 40px;
+        font-size: 14px;
+    }
+
+    .login .leftBlock h1 {
+        font-size: 35px;
+        margin-bottom: 10px;
+    }
+
+    .login .logButton {
+        height: 35px;
+        width: 90px;
+        margin-top: 30px;
+        font-size: 12px;
+    }
+
+    .login .welcome {
+        font-size: 24px;
+        margin: 20px 0;
+    }
+
+    .perpetualite {
+        font-size: 24px;
+    }
+
+    .leftBlock form {
+        padding: 20px;
+    }
+}
+
+/* Small tablets and large phones (481px - 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
+    .login {
+        width: 90%;
+        height: auto;
+        min-height: 550px;
+    }
+
+    .login .logForm {
+        width: 85%;
+        max-width: 300px;
+    }
+
+    .login .leftBlock h1 {
+        font-size: 40px;
+    }
+
+    .login .welcome {
+        font-size: 30px;
+    }
+
+    .perpetualite {
+        font-size: 30px;
+    }
 }
 
