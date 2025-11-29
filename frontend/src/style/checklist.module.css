@@ -47,7 +47,7 @@
     text-align: center;
     color: #1c4da1;
 
-    font-size: 12px;
+    font-size: 18px;
 }
 
 .buttons{
@@ -115,6 +115,13 @@
   }
 }
 
+@media (max-width: 700px)
+{
+    .studentDetail h3{
+        font-size: 14px;
+    }
+}
+
 
 @media (max-width: 480px) {
     .studentDetail {
@@ -132,5 +139,9 @@
 
     .studentResidency {
         flex-direction: column;
+    }
+
+    .studentDetail h3 {
+        font-size: 12px;
     }
 }

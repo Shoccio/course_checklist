@@ -1,5 +1,19 @@
-.programChecklist{
+:root {
+    --body-margin: 28px;
+    --select-width: 450px;
+    --select-padding: 5px;
+    --select-font-size: 14px;
+    --detail-padding: 50px;
+    --detail-padding-top: 0px;
+    --heading-font-size: 1.5rem;
+    --button-padding: 4px 10px;
+    --button-font-size: 14px;
+    --edit-icon-margin: 1rem;
+    --edit-icon-opacity: 1;
+    --gap-size: 20px;
+}
 
+.programChecklist{
     background-color: white;
 }
 
@@ -15,17 +29,17 @@
 .courseBody{
     display: flex;
     flex-direction: column;
-    margin: 28px;
+    margin: var(--body-margin);
 }
 
 .courseBody select{
     margin-left: auto;
     margin-bottom: 10px;
-    padding: 5px;
+    padding: var(--select-padding);
     border: 1px solid #ccc;
     border-radius: 6px;
-    font-size: 14px;
-    width: 450px;
+    font-size: var(--select-font-size);
+    width: var(--select-width);
 }
 
 .courseBody select:focus{
@@ -36,8 +50,8 @@
 
 .programDetail{
     display: flex;
-    padding: 50px;
-    padding-top: 0px;
+    padding: var(--detail-padding);
+    padding-top: var(--detail-padding-top);
     justify-content: center;
     align-content: center;
     flex-direction: column;
@@ -50,6 +64,7 @@
     justify-content: center;
     text-align: center;
     color: #1c4da1;
+    font-size: var(--heading-font-size);
 }
 
 .yearSem{
@@ -61,7 +76,7 @@
     right: 0;
     top: 50%;
     transform: translateY(-50%);
-    gap: 20px;
+    gap: var(--gap-size);
     position: absolute;
     color: #1c4da1;
     margin-left: auto;
@@ -69,8 +84,8 @@
 
 .editIcon {
   cursor: pointer;
-  margin-left: 1rem;
-  opacity: 1;
+  margin-left: var(--edit-icon-margin);
+  opacity: var(--edit-icon-opacity);
   transition: opacity 0.2s ease, cursor 0.2s ease;
 }
 
@@ -81,12 +96,13 @@
 
 /* Action buttons/icons */
 .buttons {
-  padding: 4px 10px;
+  padding: var(--button-padding);
   background-color: #1c4da1;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-size: var(--button-font-size);
   transition: background-color 0.3s ease;
 }
 
@@ -99,10 +115,68 @@
     right: 0;
     top: 50%;
     transform: translateY(-50%);
-    gap: 20px;
+    gap: var(--gap-size);
     position: absolute;
     color: #1c4da1;
     margin-left: auto;
+}
+
+/* iPad (768px and up) */
+@media (max-width: 1024px) {
+    :root {
+        --body-margin: 20px;
+        --select-width: 380px;
+        --select-padding: 4px;
+        --select-font-size: 13px;
+        --detail-padding: 40px;
+        --heading-font-size: 1.3rem;
+        --button-padding: 3px 8px;
+        --button-font-size: 13px;
+        --gap-size: 15px;
+    }
+}
+
+/* Small tablets and large phones (481px - 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
+    :root {
+        --body-margin: 15px;
+        --select-width: 300px;
+        --select-padding: 4px;
+        --select-font-size: 12px;
+        --detail-padding: 30px;
+        --heading-font-size: 1.2rem;
+        --button-padding: 3px 8px;
+        --button-font-size: 12px;
+        --gap-size: 12px;
+    }
+}
+
+/* iPhone 12 Pro (390px) */
+@media (max-width: 480px) {
+    :root {
+        --body-margin: 10px;
+        --select-width: 90%;
+        --select-padding: 3px;
+        --select-font-size: 11px;
+        --detail-padding: 15px;
+        --detail-padding-top: 10px;
+        --heading-font-size: 1rem;
+        --button-padding: 3px 6px;
+        --button-font-size: 11px;
+        --edit-icon-margin: 0.5rem;
+        --gap-size: 8px;
+    }
+
+    .courseBody select {
+        max-width: 100%;
+    }
+
+    .editButton,
+    .buttonLoc {
+        gap: var(--gap-size);
+        flex-direction: column;
+        align-items: flex-end;
+    }
 }
 
 @media print {
