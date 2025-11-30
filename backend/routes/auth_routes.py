@@ -36,6 +36,15 @@ def logOut(response: Response):
     response.delete_cookie("access_token", path="/")
     return response
 
+@router.get("/validate-token")
+def validateToken(current_user: dict = Depends(auth_func.getCurrentUser)):
+    """Check if the current token is still valid"""
+    return {
+        "valid": True,
+        "user_id": current_user.get("sub"),
+        "message": "Token is valid"
+    }
+
 @router.post("editPassword/{student_id}")
 def editPassword(student_id: str, newPass: RequestedPass):
     '''if curUser.login_id != student_id and curUser.role.value == "admin":

@@ -24,16 +24,6 @@ export default function Checklist() {
     const [courses, setCourses] = useCourses()
     const [isViewing, setIsViewing] = useState(false);
 
-    const signOut = async () => {
-        try {
-            await axios.post("http://127.0.0.1:8000/auth/logout", {}, { withCredentials: true });
-        } catch (err) {
-            console.error("Logout failed:", err);
-        } finally {
-            navigate("/");
-        }
-    };
-
     const addStudent = async (student) => {
         try {
             await axios.post("http://127.0.0.1:8000/student/add", student, { withCredentials: true });
@@ -79,7 +69,7 @@ export default function Checklist() {
 
     return (
         <div className={style.curChecklist}>
-            <HeaderWebsite pageName={pageName} logOut={signOut} />
+            <HeaderWebsite pageName={pageName} />
 
             <div className={style.studentBody}>
                 <div className={style.studentSearchBarWrapper}>

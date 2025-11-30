@@ -36,16 +36,6 @@ export default function ProgramCourseList() {
     setCurrentUser(currentUser);
   }, []);
 
-  const signOut = async () => {
-    try {
-      await axios.post("http://127.0.0.1:8000/auth/logout", {}, { withCredentials: true });
-    } catch (err) {
-      console.error("Logout failed:", err);
-    } finally {
-      navigate("/");
-    }
-  };
-
   const getCourses = async (program_id) => {
     try {
       const res = await axios.get(`http://127.0.0.1:8000/course/get/${program_id}`, { withCredentials: true });
@@ -131,7 +121,7 @@ export default function ProgramCourseList() {
     <div className={style.programChecklist}>
       {isUpdating && <LoadingOverlay /> }
 
-      <HeaderWebsite pageName={pageName} logOut={signOut} />
+      <HeaderWebsite pageName={pageName} />
       <div className={style.courseBody} ref={printRef}>
         <select
           name="program_id"

@@ -1,10 +1,11 @@
-import react, { useState, useEffect } from "react";
+import react, { useState, useEffect, use } from "react";
 import { FaArrowCircleDown, FaArrowCircleUp, FaChevronDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Logo from "../imgs/uphsllogo.png";
 import style from "../style/header.module.css"
+import axios from "axios";
 
-export default function HeaderWebsite({ pageName, logOut }){
+export default function HeaderWebsite({ pageName }){
     const navigate = useNavigate();
     const [isDown, setIsDown] = useState(false);
     const pageList = [
@@ -13,6 +14,16 @@ export default function HeaderWebsite({ pageName, logOut }){
         { link: "Curriculum Checklist", path: "/curriculum-checklist" }
     ];
 
+    const signOut = async () => {
+        try {
+            await axios.post("http://127.0.0.1:8000/auth/logout", {}, { withCredentials: true });
+        } catch (err) {
+            console.error("Logout failed:", err);
+        } finally {
+            navigate("/");
+        }
+    };
+
     const setBannerDown = () =>{
         setIsDown(!isDown);
     }
@@ -20,6 +31,27 @@ export default function HeaderWebsite({ pageName, logOut }){
     const handleBannerClick = (page) => {
         navigate(page.path);
     };
+
+    const validateToken = async () => {
+        try {
+            const response = await fetch("http://localhost:8000/auth/validate-token", {
+                method: "GET",
+                withCredentials: true,
+            });
+
+            if (!response.valid) {
+                signOut();
+            }
+
+        } catch (error) {
+            console.error("Error validating token:", error);
+            signOut();
+        }
+    }
+
+    useEffect(() => {
+        validateToken();
+    }, []);
 
     // Filter out the current page from the list
     const filteredPages = pageList.filter(page => page.link.toLowerCase() !== pageName.toLowerCase());
@@ -42,7 +74,7 @@ export default function HeaderWebsite({ pageName, logOut }){
                     </div>
                 </div>
             </div>
-            <button className={style.signOut} type="button" onClick={logOut}>
+            <button className={style.signOut} type="button" onClick={signOut}>
                 SIGN OUT
             </button>
         </header>

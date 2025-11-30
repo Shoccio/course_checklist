@@ -23,16 +23,6 @@ export default function Dashbaord() {
     const [courses, setCourses] = useCourses()
     const [isViewing, setIsViewing] = useState(false);
 
-    const signOut = async () => {
-        try {
-            await axios.post("http://127.0.0.1:8000/auth/logout", {}, { withCredentials: true });
-        } catch (err) {
-            console.error("Logout failed:", err);
-        } finally {
-            navigate("/");
-        }
-    };
-
     const addStudent = async (student) => {
         try {
             await axios.post("http://127.0.0.1:8000/student/add", student, { withCredentials: true });
@@ -78,7 +68,7 @@ export default function Dashbaord() {
 
     return (
         <div className={style.curChecklist}>
-            <HeaderWebsite pageName={pageName} logOut={signOut} />
+            <HeaderWebsite pageName={pageName} />
 
             <div className={style.studentBody}>
                 <img src="https://images.klipfolio.com/website/public/bf9c6fbb-06bf-4f1d-88a7-d02b70902bd1/data-dashboard.png" style={{width: "60%", margin: "auto"}}></img>
