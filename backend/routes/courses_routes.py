@@ -8,17 +8,17 @@ router = APIRouter()
 
 #--------------------------Firestore Functions--------------------------
 @router.post("/add")
-def addCourse(course: CourseSchema):
+def addCourse(course: CourseSchema, role: str = checkRole(["admin"])):
     courses_func.addCourseFirestore(course)
     return {"message": "Course add successful"}
 
 @router.put("/edit/{course_id}")
-def editCourse(course: CourseSchema, course_id: str):
+def editCourse(course: CourseSchema, course_id: str, role: str = checkRole(["admin"])):
     courses_func.editCourseFirestore(course, course_id)
     return {"message": "Course edited succesful"}
 
 @router.delete("/delete/{course_id}")
-def deleteCourse(course_id: str):
+def deleteCourse(course_id: str, role: str = checkRole(["admin"])):
     courses_func.deleteCourseFirestore(course_id)
     return {"message": "Course deleted succesful"}
 

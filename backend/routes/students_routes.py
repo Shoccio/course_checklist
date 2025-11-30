@@ -9,15 +9,18 @@ from services.student_services import addStudentHelper
 router = APIRouter()
 
 @router.post("/add")
-def addStudent(student: Student):
+def addStudent(student: Student, role: str = checkRole(["admin"])):
     return addStudentHelper(student)
 
 @router.put("/edit")
-def editStudent(student: Student):
+def editStudent(student: Student, user: User = Depends(getCurrentUser)):
+    if user["role"] != "admin" and user["login_id"] != student.student_id:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "You do not have permission to edit this student")
+    
     return student_func.editStudent(student)
 
 @router.delete("/delete/{student_id}")
-def deleteStudent(student_id: str):
+def deleteStudent(student_id: str, role: str = checkRole(["admin"])):
     return student_func.deleteStudent(student_id)
 
 @router.get("/get/details")
@@ -28,7 +31,7 @@ def get_own_student_details(user: User = Depends(getCurrentUser)):
     return student_func.getStudent(user)
 
 @router.get("/search")
-def search_students(q: str = Query(..., min_length=1)):
+def search_students(q: str = Query(..., min_length=1), role: str = checkRole(["admin", "student"])):
     return student_func.search_students(q)
 
 @router.get("/get/{student_id}")

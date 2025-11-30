@@ -46,9 +46,9 @@ def validateToken(current_user: dict = Depends(auth_func.getCurrentUser)):
     }
 
 @router.post("editPassword/{student_id}")
-def editPassword(student_id: str, newPass: RequestedPass):
-    '''if curUser.login_id != student_id and curUser.role.value == "admin":
-            return {"Error: Invalid User"} '''
+def editPassword(student_id: str, newPass: RequestedPass, curUser: dict = Depends(auth_func.getCurrentUser)):
+    if curUser["role"] != "admin" and curUser["login_id"] != student_id:
+        return {"message": "You do not have permission to change this password"}
     
     return user_func.editPass(student_id, newPass.newPass)
 
