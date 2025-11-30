@@ -133,6 +133,7 @@ tbody tr.defaultRow:hover {
 td, th {
     text-align: center;
     padding: var(--table-padding);
+    font-size: var(--table-font-size);
 }
 
 /* Editable inputs */
