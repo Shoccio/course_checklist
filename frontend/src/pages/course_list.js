@@ -33,11 +33,7 @@ export default function CourseList() {
       <div className={style.courseBody}>
 
         <div className={style.programDetail}>
-            <h3 style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            PROGRAM COURSELIST
-            </h3>
-
-            <CoursesTable courses={courses} />
+            <CoursesTable courses={courses} onCourseAdded={getCourses} />
 
         </div>
       </div>

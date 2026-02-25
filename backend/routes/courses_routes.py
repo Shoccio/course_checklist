@@ -1,13 +1,14 @@
 from functions import courses_func
 from functions.program_course_func import getCourseByProgram
 from schema.course_schema import CourseSchema
+from schema.courses_schema import CoursesSchema
 from fastapi import APIRouter
 
 router = APIRouter()
 
 #--------------------------Firestore Functions--------------------------
 @router.post("/add")
-def addCourse(course: CourseSchema):
+def addCourse(course: CoursesSchema):
     courses_func.addCourse(course)
     return {"message": "Course add successful"}
 

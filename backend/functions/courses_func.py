@@ -1,16 +1,17 @@
-from schema.course_schema import CourseSchema 
+from schema.course_schema import CourseSchema
+from schema.courses_schema import CoursesSchema
+
 from functions.program_course_func import updateOrder
 from fastapi import HTTPException, status
 
 from db.firestore import fs
 
 #--------------------------Firestore Functions--------------------------
-def addCourse(course: CourseSchema):
+def addCourse(course: CoursesSchema):
     course_collection = fs.collection("courses")
 
     course_dict = course.__dict__
     course_id = course_dict["course_id"]
-    course_dict.pop("course_id")
 
     course_collection.document(course_id).set(course_dict)
 
