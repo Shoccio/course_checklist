@@ -12,7 +12,8 @@ export default function HeaderWebsite({ pageName }){
     const pageList = [
         { link: "Dashboard", path: "/dashboard" }, 
         { link: "Program Courselist", path: "/program-courselist" }, 
-        { link: "Curriculum Checklist", path: "/curriculum-checklist" }
+        { link: "Curriculum Checklist", path: "/curriculum-checklist" },
+        { link: "Course List", path: "/course-list"}
     ];
 
     const signOut = async () => {

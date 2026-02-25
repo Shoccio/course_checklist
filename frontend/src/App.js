@@ -5,6 +5,7 @@ import Checklist from "./pages/checklist"
 import ProgramCourseList from "./pages/program_course_list";
 import Dashbaord from "./pages/dashboard";
 import NewChecklist from "./pages/new_checklist";
+import CourseList from "./pages/course_list";
 import './App.css';
 import axios from "axios";
 
@@ -71,6 +72,7 @@ function App() {
                 <Route path="/program-courselist" element={<ProgramCourseList />} />
                 <Route path="/dashboard" element={<Dashbaord />} />
                 <Route path="/new" element={<NewChecklist />} />
+                <Route path="/course-list" element={<CourseList />} />
               </Routes>
             </Router>
         </CoursesContext.Provider>

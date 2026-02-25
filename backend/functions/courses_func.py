@@ -18,16 +18,9 @@ def editCourse(course: CourseSchema, course_id: str):
     course_collection = fs.collection("courses")
 
     course_dict = course.__dict__
-    new_id = course_dict["course_id"]
     course_dict.pop("course_id")
-
-    old_course = course_collection.document(course_id)
-
-    if not old_course.get().exists:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Course does not exist")
     
-    old_course.delete()
-    course_collection.document(new_id).set(course_dict)
+    course_collection.document(course_id).set(course_dict)
 
 def deleteCourse(course_id: str):
     course_collection = fs.collection("courses")
@@ -114,6 +107,14 @@ def checkCollection(fields: list[str], courses:dict, collection):
     batch.commit()
             
         
+def getAllCourses():
+    course_collection = list(fs.collection("courses").stream())
+
+    courses = [course.to_dict() for course in course_collection]
+
+    return courses
+
+
 
 
 

@@ -8,17 +8,17 @@ router = APIRouter()
 #--------------------------Firestore Functions--------------------------
 @router.post("/add")
 def addCourse(course: CourseSchema):
-    courses_func.addCourseFirestore(course)
+    courses_func.addCourse(course)
     return {"message": "Course add successful"}
 
 @router.put("/edit/{course_id}")
 def editCourse(course: CourseSchema, course_id: str):
-    courses_func.editCourseFirestore(course, course_id)
+    courses_func.editCourse(course, course_id)
     return {"message": "Course edited succesful"}
 
 @router.delete("/delete/{course_id}")
 def deleteCourse(course_id: str):
-    courses_func.deleteCourseFirestore(course_id)
+    courses_func.deleteCourse(course_id)
     return {"message": "Course deleted succesful"}
 
 @router.put("/update/{program_id}")
@@ -28,3 +28,7 @@ def updateCourses(program_id: str, course: list[CourseSchema]):
 @router.get("/get/{program_id}")
 def getCourse(program_id: str):
     return getCourseByProgram(program_id)
+
+@router.get("/getAll")
+def getAllCourses():
+    return courses_func.getAllCourses()
