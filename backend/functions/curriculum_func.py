@@ -1,4 +1,5 @@
 from db.firestore import fs
+from schema.curriculum_schema import Curriculum
 
 def getPrgmCurr(program_id: str):
     curr_col = fs.collection("curriculum")
@@ -9,3 +10,12 @@ def getPrgmCurr(program_id: str):
 
 
     return curriculums
+
+def addCurr(curr: Curriculum):
+    col = fs.collection("curriculum")
+
+    data = curr.model_dump()
+
+    col.document().set(data)
+
+    return "Succesful"

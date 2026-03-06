@@ -39,8 +39,7 @@ export default function AddCurriculumModal({programs, selectedProgram, handleAdd
                         type="text"
                         disabled
                         value={
-                            programs.find((p) => p.id === selectedProgram)?.name ||
-                            ""
+                            selectedProgram
                         }
                         style={{
                             width: "100%",
