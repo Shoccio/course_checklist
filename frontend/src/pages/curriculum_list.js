@@ -140,7 +140,7 @@ export default function CurriculumList() {
         }
     };
 
-    const handleAddProgram = async (newProgramName) => {
+    const handleAddProgram = async (newProgramName, newProgramID, newSpecialization) => {
         if (!newProgramName.trim()) {
             alert("Please enter a program name");
             return;
@@ -148,7 +148,9 @@ export default function CurriculumList() {
 
         try {
             const response = await axios.post(API_URL + `/program/add`, {
-                name: newProgramName.trim()
+                name: newProgramName.trim(),
+                program_id: newProgramID.trim(),
+                specialization: newSpecialization.trim()
             });
             
             const updatedPrograms = [...programs, response.data];

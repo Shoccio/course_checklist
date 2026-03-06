@@ -2,10 +2,14 @@ import React, {useState} from "react";
 
 export default function AddProgramModal({handleAddProgram, setShowAddProgramModal}){
     const [newProgramName, setNewProgramName] = useState("");
+    const [newProgramID, setNewProgramID] = useState("");
+    const [newSpecialization, setNewSpecialization] = useState("");
 
     function addProgram(){
-        handleAddProgram(newProgramName);
+        handleAddProgram(newProgramName, newProgramID, newSpecialization);
         setNewProgramName("");
+        setNewProgramID("");
+        setNewSpecialization("");
     };
     
     return(
@@ -32,6 +36,26 @@ export default function AddProgramModal({handleAddProgram, setShowAddProgramModa
                 
                 <div style={{ marginBottom: "1.5rem" }}>
                     <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>
+                        Program ID:
+                    </label>
+                    <input
+                        type="text"
+                        value={newProgramID}
+                        onChange={(e) => setNewProgramID(e.target.value)}
+                        placeholder="Enter program ID"
+                        style={{
+                            width: "100%",
+                            padding: "0.75rem",
+                            fontSize: "1rem",
+                            border: "1px solid #ddd",
+                            borderRadius: "4px",
+                            boxSizing: "border-box",
+                        }}
+                    />
+                </div>
+
+                <div style={{ marginBottom: "1.5rem" }}>
+                    <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>
                         Program Name:
                     </label>
                     <input
@@ -47,10 +71,30 @@ export default function AddProgramModal({handleAddProgram, setShowAddProgramModa
                             borderRadius: "4px",
                             boxSizing: "border-box",
                         }}
-                        onKeyPress={(e) => {
+                        onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 addProgram();
                             }
+                        }}
+                    />
+                </div>
+
+                <div style={{ marginBottom: "1.5rem" }}>
+                    <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>
+                        Specialization (Optional):
+                    </label>
+                    <input
+                        type="text"
+                        value={newSpecialization}
+                        onChange={(e) => setNewSpecialization(e.target.value)}
+                        placeholder="Enter specialization (optional)"
+                        style={{
+                            width: "100%",
+                            padding: "0.75rem",
+                            fontSize: "1rem",
+                            border: "1px solid #ddd",
+                            borderRadius: "4px",
+                            boxSizing: "border-box",
                         }}
                     />
                 </div>
@@ -60,6 +104,8 @@ export default function AddProgramModal({handleAddProgram, setShowAddProgramModa
                         onClick={() => {
                             setShowAddProgramModal(false);
                             setNewProgramName("");
+                            setNewProgramID("");
+                            setNewSpecialization("");
                         }}
                         style={{
                             padding: "0.5rem 1rem",
