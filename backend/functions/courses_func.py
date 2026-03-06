@@ -15,11 +15,10 @@ def addCourse(course: CoursesSchema):
 
     course_collection.document(course_id).set(course_dict)
 
-def editCourse(course: CourseSchema, course_id: str):
+def editCourse(course: CoursesSchema, course_id: str):
     course_collection = fs.collection("courses")
 
     course_dict = course.__dict__
-    course_dict.pop("course_id")
     
     course_collection.document(course_id).set(course_dict)
 

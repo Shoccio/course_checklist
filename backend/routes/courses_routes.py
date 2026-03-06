@@ -13,7 +13,7 @@ def addCourse(course: CoursesSchema):
     return {"message": "Course add successful"}
 
 @router.put("/edit/{course_id}")
-def editCourse(course: CourseSchema, course_id: str):
+def editCourse(course: CoursesSchema, course_id: str):
     courses_func.editCourse(course, course_id)
     return {"message": "Course edited succesful"}
 

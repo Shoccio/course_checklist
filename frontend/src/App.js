@@ -1,11 +1,14 @@
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom"
 import { createContext, useContext, useState } from "react";
+
 import Login from "./pages/login"
 import Checklist from "./pages/checklist"
 import ProgramCourseList from "./pages/program_course_list";
 import Dashbaord from "./pages/dashboard";
 import NewChecklist from "./pages/new_checklist";
 import CourseList from "./pages/course_list";
+import CurriculumList from "./pages/curriculum_list";
+
 import './App.css';
 import axios from "axios";
 
@@ -73,6 +76,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashbaord />} />
                 <Route path="/new" element={<NewChecklist />} />
                 <Route path="/course-list" element={<CourseList />} />
+                <Route path="/curriculum-list" element={<CurriculumList />} />
               </Routes>
             </Router>
         </CoursesContext.Provider>

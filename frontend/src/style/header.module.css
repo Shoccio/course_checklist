@@ -61,7 +61,7 @@ header{
 .center{
     display: flex;
     position: absolute;
-    top: -75px;
+    top: -150px;
     left: 50%;
     transform: translate(-50%, var(--center-calc));
     transition: transform 0.5s ease-in-out;
@@ -112,7 +112,7 @@ header{
 }
 
 .center.animated{
-    transform: translate(-50%, 20%);
+    transform: translate(-50%, 35%);
 }
 
 /* iPad (768px and up) */

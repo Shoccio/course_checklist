@@ -5,6 +5,7 @@ import { API_URL } from "../../misc/url";
 
 export default function CoursesTable({ courses, onCourseAdded }) {
     const [showModal, setShowModal] = useState(false);
+    const [editingCourseId, setEditingCourseId] = useState(null);
     const [formData, setFormData] = useState({
         course_id: "",
         course_name: "",
@@ -34,7 +35,14 @@ export default function CoursesTable({ courses, onCourseAdded }) {
         setLoading(true);
         setError("");
 
-        await axios.post(API_URL + "/course/add", formData)
+        const endpoint = editingCourseId ? `/course/edit/${editingCourseId}` : "/course/add";
+        const method = editingCourseId ? "put" : "post";
+
+        await axios({
+            method,
+            url: API_URL + endpoint,
+            data: formData
+        })
         .then((res) => {
                 setFormData({
                 course_id: "",
@@ -50,16 +58,36 @@ export default function CoursesTable({ courses, onCourseAdded }) {
                 course_units: 0,
             });
             setShowModal(false);
+            setEditingCourseId(null);
             if (onCourseAdded) {
                 onCourseAdded();
             }
         })
         .catch((err) =>{
-            setError(err.response?.data?.message || "Failed to add course");
+            setError(err.response?.data?.message || "Failed to save course");
         })
         .finally(() => {
             setLoading(false);
         });
+    };
+
+    const handleEdit = (course) => {
+        setEditingCourseId(course.course_id);
+        setFormData(course);
+        setShowModal(true);
+    };
+
+    const handleDelete = async (courseId) => {
+        if (window.confirm("Are you sure you want to delete this course?")) {
+            try {
+                await axios.delete(API_URL + `/course/delete/${courseId}`);
+                if (onCourseAdded) {
+                    onCourseAdded();
+                }
+            } catch (err) {
+                alert(err.response?.data?.message || "Failed to delete course");
+            }
+        }
     };
 
     return (
@@ -81,6 +109,8 @@ export default function CoursesTable({ courses, onCourseAdded }) {
                         <th colSpan={2}>Hours</th>
                         <th colSpan={2}>Units</th>
                         <th rowSpan={2}>Prerequisite</th>
+                        <th rowSpan={2}></th>
+                        <th rowSpan={2}></th>
                     </tr>
                     <tr>
                         <th>Lec</th>
@@ -92,7 +122,7 @@ export default function CoursesTable({ courses, onCourseAdded }) {
                 <tbody>
                     {courses?.length === 0 ? (
                         <tr>
-                            <td colSpan="11" style={{ textAlign: "center" }}>
+                            <td colSpan="13" style={{ textAlign: "center" }}>
                                 No courses found.
                             </td>
                         </tr>
@@ -108,6 +138,36 @@ export default function CoursesTable({ courses, onCourseAdded }) {
                                 <td>{course.units_lec || 0}</td>
                                 <td>{course.units_lab || 0}</td>
                                 <td>{course.course_preq || "-"}</td>
+                                <td>
+                                    <button 
+                                        onClick={() => handleEdit(course)}
+                                        style={{ 
+                                            background: "none", 
+                                            border: "none", 
+                                            cursor: "pointer", 
+                                            fontSize: "1.2rem",
+                                            color: "#4CAF50"
+                                        }}
+                                        title="Edit course"
+                                    >
+                                        ✏️
+                                    </button>
+                                </td>
+                                <td>
+                                    <button 
+                                        onClick={() => handleDelete(course.course_id)}
+                                        style={{ 
+                                            background: "none", 
+                                            border: "none", 
+                                            cursor: "pointer", 
+                                            fontSize: "1.2rem",
+                                            color: "#f44336"
+                                        }}
+                                        title="Delete course"
+                                    >
+                                        🗑️
+                                    </button>
+                                </td>
                             </tr>
                         ))
                     )}
@@ -117,7 +177,7 @@ export default function CoursesTable({ courses, onCourseAdded }) {
             {showModal && (
                 <div style={modalStyles.overlay}>
                     <div style={modalStyles.modal}>
-                        <h3>Add New Course</h3>
+                        <h3>{editingCourseId ? "Edit Course" : "Add New Course"}</h3>
                         {error && <div style={{ color: "red", marginBottom: "1rem" }}>{error}</div>}
                         <form onSubmit={handleSubmit} style={modalStyles.form}>
                             <input
@@ -126,6 +186,7 @@ export default function CoursesTable({ courses, onCourseAdded }) {
                                 placeholder="Course ID"
                                 value={formData.course_id}
                                 onChange={handleChange}
+                                disabled={editingCourseId !== null}
                                 required
                             />
                             <input
@@ -189,11 +250,27 @@ export default function CoursesTable({ courses, onCourseAdded }) {
                             />
                             <div style={modalStyles.buttonGroup}>
                                 <button type="submit" disabled={loading}>
-                                    {loading ? "Adding..." : "Add Course"}
+                                    {loading ? (editingCourseId ? "Updating..." : "Adding...") : (editingCourseId ? "Update Course" : "Add Course")}
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => setShowModal(false)}
+                                    onClick={() => {
+                                        setShowModal(false);
+                                        setEditingCourseId(null);
+                                        setFormData({
+                                            course_id: "",
+                                            course_name: "",
+                                            course_year: "",
+                                            course_sem: "",
+                                            hours_lec: "",
+                                            hours_lab: "",
+                                            units_lec: "",
+                                            units_lab: "",
+                                            course_preq: "",
+                                            course_hours: 0,
+                                            course_units: 0,
+                                        });
+                                    }}
                                     style={modalStyles.cancelBtn}
                                 >
                                     Cancel
